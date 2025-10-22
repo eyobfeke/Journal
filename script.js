@@ -74,7 +74,7 @@ firstDay = (firstDay + 6) % 7;
     }
 
     cell.addEventListener("click", () => {
-      window.location.href = `day.html?date=${dateStr}`;
+      window.location.href = `entries/day.html?date=${dateStr}`;
     });
 
     calendarEl.appendChild(cell);
