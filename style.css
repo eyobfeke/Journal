@@ -1,108 +1,279 @@
+/* ============= GLOBAL BASE ============= */
 :root {
-  --bg: #f5f6f8;
-  --text: #222;
-  --card: #fff;
-  --accent: #0078d4;
-  --shadow: rgba(0, 0, 0, 0.1);
-}
+  --bg-light: #f8f9fa;
+  --card-light: #ffffff;
+  --text-light: #1a1a1a;
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --accent-light: #4a90e2;
 
-body.dark {
-  --bg: #1c1f26;
-  --text: #f2f2f2;
-  --card: #2b2f38;
-  --accent: #4aa3ff;
-  --shadow: rgba(0, 0, 0, 0.5);
+  --bg-dark: #121212;
+  --card-dark: #1e1e1e;
+  --text-dark: #f1f1f1;
+  --shadow-dark: rgba(0, 0, 0, 0.5);
+  --accent-dark: #66b3ff;
 }
 
 body {
-  font-family: "Segoe UI", sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: var(--bg-light);
+  color: var(--text-light);
   margin: 0;
   padding: 0;
   transition: background 0.3s, color 0.3s;
 }
 
-header {
-  text-align: center;
-  padding: 1rem;
+body.dark {
+  background: var(--bg-dark);
+  color: var(--text-dark);
 }
 
-.month-nav {
+/* ============= HEADER ============= */
+header {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  padding: 1rem;
+  background: var(--card-light);
+  box-shadow: 0 2px 6px var(--shadow-light);
+}
+
+body.dark header {
+  background: var(--card-dark);
+  box-shadow: 0 2px 6px var(--shadow-dark);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.top-bar {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
 }
 
 button {
-  background: var(--accent);
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
   cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  background: var(--accent-light);
+  color: white;
+  transition: background 0.2s;
 }
 
 button:hover {
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
-.theme-btn {
+body.dark button {
+  background: var(--accent-dark);
+}
+
+/* ============= PAGE CONTAINER ============= */
+.day-page {
+  max-width: 1000px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* ============= CARDS ============= */
+.card {
+  background: var(--card-light);
+  border-radius: 12px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 6px var(--shadow-light);
+  margin-bottom: 1.5rem;
+}
+
+body.dark .card {
+  background: var(--card-dark);
+  box-shadow: 0 2px 6px var(--shadow-dark);
+}
+
+/* ============= TRADES TABLE ============= */
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background: var(--accent-light);
+  color: white;
+}
+
+body.dark th {
+  background: var(--accent-dark);
+}
+
+td img.thumb {
+  width: 50px;
+  height: 35px;
+  border-radius: 6px;
+  cursor: pointer;
+  object-fit: cover;
+  transition: transform 0.2s;
+}
+
+td img.thumb:hover {
+  transform: scale(1.1);
+}
+
+/* ============= SUMMARY TABLE ============= */
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.summary-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+/* ============= MOOD TRACKER ============= */
+.moods {
+  display: flex;
+  justify-content: space-around;
+  padding: 1rem 0;
+}
+
+.mood {
+  width: 45px;
+  height: 45px;
+  font-size: 1.5rem;
+  border: 2px solid #999;
+  border-radius: 50%;
   background: transparent;
-  border: 1px solid var(--accent);
-  color: var(--text);
-  font-size: 1.2rem;
-  padding: 0.4rem 0.8rem;
 }
 
-.calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.8rem;
-  padding: 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
+.mood.active {
+  background: black;
+  color: white;
 }
 
-.day {
-  background: var(--card);
+body.dark .mood.active {
+  background: white;
+  color: black;
+}
+
+/* ============= TEXTAREAS ============= */
+textarea {
+  width: 100%;
   border-radius: 10px;
-  min-height: 130px;
-  padding: 0.5rem;
-  box-shadow: 0 0 4px var(--shadow);
-  position: relative;
-  transition: background 0.3s, color 0.3s;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background: var(--bg-light);
+  color: var(--text-light);
 }
 
-.day-number {
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  font-weight: bold;
-  color: var(--text);
+body.dark textarea {
+  background: var(--bg-dark);
+  color: var(--text-dark);
+  border: 1px solid #444;
 }
 
-.trades {
-  margin-top: 1.5rem;
-  font-size: 0.85rem;
+/* ============= MODAL (ADD TRADE FORM) ============= */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
+  z-index: 100;
 }
 
-.trade {
-  background: #e9f3ff;
-  margin-bottom: 4px;
-  padding: 2px 6px;
-  border-radius: 4px;
+.modal.hidden {
+  display: none;
 }
 
-body.dark .trade {
-  background: #334155;
+.modal-panel {
+  background: var(--card-light);
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 4px 25px rgba(0,0,0,0.3);
 }
 
-.trade.long {
-  color: #00b300;
+body.dark .modal-panel {
+  background: var(--card-dark);
 }
 
-.trade.short {
-  color: #ff5c5c;
+.modal-panel h3 {
+  margin-top: 0;
+}
+
+.modal-form label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.modal-form input {
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+/* ============= IMAGE VIEWER MODAL ============= */
+.img-panel {
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--card-light);
+}
+
+body.dark .img-panel {
+  background: var(--card-dark);
+}
+
+.img-panel img {
+  max-width: 90vw;
+  max-height: 80vh;
+  border-radius: 10px;
+}
+
+/* ============= UTILITIES ============= */
+button.accent {
+  background: var(--accent-light);
+  color: white;
+}
+
+body.dark button.accent {
+  background: var(--accent-dark);
+}
+
+button#themeToggle {
+  background: none;
+  font-size: 1.2rem;
 }
