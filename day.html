@@ -1,0 +1,103 @@
+/* ---------- DAY PAGE STYLING ---------- */
+.day-page {
+  width: 90%;
+  max-width: 1000px;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.day-page h2 {
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+#tradeTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#tradeTable th, #tradeTable td {
+  border: 1px solid var(--border);
+  padding: 8px;
+  text-align: center;
+}
+
+#tradeTable input, #tradeTable textarea {
+  width: 95%;
+}
+
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.screenshot-thumb {
+  max-width: 50px;
+  max-height: 50px;
+  margin-top: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  padding-top: 60px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.8);
+}
+
+.modal-content {
+  margin: auto;
+  display: block;
+  max-width: 90%;
+  border-radius: 10px;
+}
+
+.close {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  color: white;
+  font-size: 35px;
+  cursor: pointer;
+}
+
+textarea {
+  width: 100%;
+  min-height: 70px;
+  resize: vertical;
+}
+
+.mood-options {
+  display: flex;
+  gap: 10px;
+}
+
+.mood {
+  font-size: 1.4rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.mood.active {
+  background: var(--accent);
+  color: #fff;
+}
