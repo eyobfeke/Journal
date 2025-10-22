@@ -1,32 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trade Entry</title>
-  <link rel="stylesheet" href="../style.css" />
-<script src="day.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Trade Journal — Day</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <a href="index.html">← Back to Calendar</a>
-    <h2 id="dateTitle"></h2>
+    <h1>📘 Trade Entry</h1>
+    <div class="top-bar">
+      <button id="backBtn">← Back</button>
+      <div class="right-controls">
+        <button id="themeToggle" class="theme-btn">🌞</button>
+      </div>
+    </div>
   </header>
 
   <main class="day-page">
-    <form id="tradeForm">
-      <input type="text" id="symbol" placeholder="Symbol (e.g. AAPL)" required />
-      <select id="side">
-        <option value="LONG">LONG</option>
-        <option value="SHORT">SHORT</option>
-      </select>
-      <input type="number" id="qty" placeholder="Quantity" required />
-      <input type="number" id="entry" placeholder="Entry Price" required />
-      <input type="number" id="exit" placeholder="Exit Price" required />
-      <textarea id="notes" placeholder="Notes / Emotions / Lessons"></textarea>
-      <button type="submit">💾 Save Trade</button>
-    </form>
+    <h2 id="dateTitle">Trades for —</h2>
 
-    <h3>Trades for this day</h3>
-    <div id="tradesList"></div>
+    <!-- TRADES TABLE -->
+    <section class="card wide">
+      <div class="section-head">
+        <h3>Trades</h3>
+        <button id="openAddBtn" class="accent">＋ Add Trade</button>
+      </div>
+
+      <div class="table-wrap">
+        <table id="tradesTable" class="wide-table">
+          <thead>
+            <tr>
+              <th>Pair</th>
+              <th>Entry</th>
+              <th>Exit</th>
+              <th>RR</th>
+              <th>Notes</th>
+              <th>P&L</th>
+              <th>Screenshot</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SUMMARY -->
+    <section class="card summary-card">
+      <h3>Daily Summary</h3>
+      <table class="summary-table">
+        <tr><td>Trades</td><td id="sum_count">0</td></tr>
+        <tr><td>Avg Win</td><td id="sum_avg_win">0</td></tr>
+        <tr><td>Avg Loss</td><td id="sum_avg_loss">0</td></tr>
+        <tr><td>Total RR</td><td id="sum_total_rr">0</td></tr>
+      </table>
+    </section>
+
+    <!-- MOOD TRACKER -->
+    <section class="card mood-card">
+      <h3>Mood Tracker</h3>
+      <div class="moods">
+        <button class="mood" data-mood="very_happy" title="Very happy">😄</button>
+        <button class="mood" data-mood="happy" title="Happy">🙂</button>
+        <button class="mood" data-mood="neutral" title="Neutral">😐</button>
+        <button class="mood" data-mood="frustrated" title="Frustrated">😤</button>
+        <button class="mood" data-mood="confident" title="Confident">😎</button>
+      </div>
+    </section>
+
+    <!-- REFLECTION -->
+    <section class="card">
+      <h3>Daily Reflection</h3>
+      <textarea id="reflection" rows="5" placeholder="How did the day go? What did you learn?"></textarea>
+    </section>
+
+    <!-- GRATITUDE -->
+    <section class="card">
+      <h3>Gratitude</h3>
+      <textarea id="gratitude" rows="3" placeholder="1–3 things you're grateful for today"></textarea>
+    </section>
   </main>
+
+  <!-- ADD / EDIT TRADE MODAL -->
+  <div id="tradeModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-panel">
+      <h3 id="modalTitle">Add Trade</h3>
+      <form id="tradeForm" class="modal-form">
+        <label>Pair <input id="pair" required placeholder="e.g., AAPL" /></label>
+        <label>Entry <input id="entry" type="number" step="any" required /></label>
+        <label>Exit <input id="exit" type="number" step="any" required /></label>
+        <label>RR <input id="rr" type="number" step="any" /></label>
+        <label>P&L <input id="pnl" type="number" step="any" required /></label>
+        <label>Notes <input id="notes" placeholder="Reasoning, plan, lessons" /></label>
+        <label>Screenshot <input id="screenshot" type="file" accept="image/*" /></label>
+
+        <div class="modal-actions">
+          <button type="button" id="cancelBtn">Cancel</button>
+          <button type="submit" class="accent" id="saveBtn">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- IMAGE VIEWER MODAL -->
+  <div id="imgModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-panel img-panel">
+      <button id="imgClose" class="img-close">✕</button>
+      <img id="imgViewer" src="" alt="screenshot preview" />
+    </div>
+  </div>
+
+  <script src="day.js"></script>
+</body>
+</html>
