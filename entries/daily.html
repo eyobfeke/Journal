@@ -1,1 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trade Entry</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <a href="index.html">← Back to Calendar</a>
+    <h2 id="dateTitle"></h2>
+  </header>
 
+  <main class="day-page">
+    <form id="tradeForm">
+      <input type="text" id="symbol" placeholder="Symbol (e.g. AAPL)" required />
+      <select id="side">
+        <option value="LONG">LONG</option>
+        <option value="SHORT">SHORT</option>
+      </select>
+      <input type="number" id="qty" placeholder="Quantity" required />
+      <input type="number" id="entry" placeholder="Entry Price" required />
+      <input type="number" id="exit" placeholder="Exit Price" required />
+      <textarea id="notes" placeholder="Notes / Emotions / Lessons"></textarea>
+      <button type="submit">💾 Save Trade</button>
+    </form>
+
+    <h3>Trades for this day</h3>
+    <div id="tradesList"></div>
+  </main>
