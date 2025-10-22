@@ -68,4 +68,5 @@ function getTradesForDate(date) {
 }
 
 renderCalendar();
+<script src="script.js"></script>
 
