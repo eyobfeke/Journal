@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trade Entry</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <a href="index.html">← Back to Calendar</a>
+    <h2 id="dateTitle"></h2>
+  </header>
+
+  <main class="day-page">
+    <form id="tradeForm">
+      <input type="text" id="symbol" placeholder="Symbol (e.g. AAPL)" required />
+      <select id="side">
+        <option value="LONG">LONG</option>
+        <option value="SHORT">SHORT</option>
+      </select>
+      <input type="number" id="qty" placeholder="Quantity" required />
+      <input type="number" id="entry" placeholder="Entry Price" required />
+      <input type="number" id="exit" placeholder="Exit Price" required />
+      <textarea id="notes" placeholder="Notes / Emotions / Lessons"></textarea>
+      <button type="submit">💾 Save Trade</button>
+    </form>
+
+    <h3>Trades for this day</h3>
+    <div id="tradesList"></div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const date = params.get("date");
+    document.getElementById("dateTitle").textContent = date;
+
+    const tradesList = document.getElementById("tradesList");
+    const tradeForm = document.getElementById("tradeForm");
+
+    function getTrades() {
+      return JSON.parse(localStorage.getItem("trades") || "[]");
+    }
+
+    function saveTrades(arr) {
+      localStorage.setItem("trades", JSON.stringify(arr));
+    }
+
+    function renderTrades() {
+      const trades = getTrades().filter((t) => t.date === date);
+      tradesList.innerHTML = "";
+      if (trades.length === 0) {
+        tradesList.innerHTML = "<p>No trades yet.</p>";
+      } else {
+        trades.forEach((t) => {
+          const div = document.createElement("div");
+          div.className = "trade-entry";
+          div.innerHTML = `
+            <strong>${t.symbol}</strong> (${t.side}) — Qty: ${t.qty}<br>
+            Entry: ${t.entry}, Exit: ${t.exit}, <b>P&L: ${t.pnl}</b><br>
+            <em>${t.notes || ""}</em>
+          `;
+          tradesList.appendChild(div);
+        });
+      }
+    }
+
+    tradeForm.onsubmit = (e) => {
+      e.preventDefault();
+      const symbol = symbolInput.value.trim().toUpperCase();
+      const side = sideInput.value;
+      const qty = Number(qtyInput.value);
+      const entry = Number(entryInput.value);
+      const exit = Number(exitInput.value);
+      const pnl =
+        side === "LONG"
+          ? (exit - entry) * qty
+          : (entry - exit) * qty;
+      const notes = notesInput.value;
+
+      const newTrade = { id: Date.now(), date, symbol, side, qty, entry, exit, pnl, notes };
+
+      const all = getTrades();
+      all.push(newTrade);
+      saveTrades(all);
+
+      tradeForm.reset();
+      renderTrades();
+    };
+
+    const symbolInput = document.getElementById("symbol");
+    const sideInput = document.getElementById("side");
+    const qtyInput = document.getElementById("qty");
+    const entryInput = document.getElementById("entry");
+    const exitInput = document.getElementById("exit");
+    const notesInput = document.getElementById("notes");
+
+    renderTrades();
+  </script>
+</body>
+</html>
