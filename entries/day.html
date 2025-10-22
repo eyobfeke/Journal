@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Trade Journal — Day</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trade Entry</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -11,106 +11,236 @@
     <h1>📘 Trade Entry</h1>
     <div class="top-bar">
       <button id="backBtn">← Back</button>
-      <div class="right-controls">
-        <button id="themeToggle" class="theme-btn">🌞</button>
-      </div>
+      <button id="themeToggle">🌓</button>
     </div>
   </header>
 
   <main class="day-page">
-    <h2 id="dateTitle">Trades for —</h2>
+    <h2 id="dateTitle">Trades for</h2>
 
-    <!-- TRADES TABLE -->
-    <section class="card wide">
-      <div class="section-head">
+    <div class="grid">
+      <!-- LEFT SIDE -->
+      <section class="card left">
         <h3>Trades</h3>
-        <button id="openAddBtn" class="accent">＋ Add Trade</button>
-      </div>
+        <button id="addTradeBtn" class="accent">＋ Add Trade</button>
 
-      <div class="table-wrap">
-        <table id="tradesTable" class="wide-table">
-          <thead>
-            <tr>
-              <th>Pair</th>
-              <th>Entry</th>
-              <th>Exit</th>
-              <th>RR</th>
-              <th>Notes</th>
-              <th>P&L</th>
-              <th>Screenshot</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody></tbody>
+        <div class="table-wrap">
+          <table id="tradeTable">
+            <thead>
+              <tr>
+                <th>Pair</th>
+                <th>Entry</th>
+                <th>Exit</th>
+                <th>R:R</th>
+                <th>P&L</th>
+                <th>Notes</th>
+                <th>Screenshot</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <h3>Daily Summary</h3>
+        <table class="summary-table" id="summaryTable">
+          <tr><td>Trades</td><td id="sumTrades">0</td></tr>
+          <tr><td>Avg Win</td><td id="sumWin">0</td></tr>
+          <tr><td>Avg Loss</td><td id="sumLoss">0</td></tr>
+          <tr><td>Total RR</td><td id="sumRR">0</td></tr>
         </table>
-      </div>
-    </section>
+      </section>
 
-    <!-- SUMMARY -->
-    <section class="card summary-card">
-      <h3>Daily Summary</h3>
-      <table class="summary-table">
-        <tr><td>Trades</td><td id="sum_count">0</td></tr>
-        <tr><td>Avg Win</td><td id="sum_avg_win">0</td></tr>
-        <tr><td>Avg Loss</td><td id="sum_avg_loss">0</td></tr>
-        <tr><td>Total RR</td><td id="sum_total_rr">0</td></tr>
-      </table>
-    </section>
+      <!-- RIGHT SIDE -->
+      <section class="card right">
+        <h3>Mood Tracker</h3>
+        <div class="moods" id="moodTracker">
+          <button class="mood">😞</button>
+          <button class="mood">😐</button>
+          <button class="mood">🙂</button>
+          <button class="mood">😃</button>
+          <button class="mood">🤩</button>
+        </div>
 
-    <!-- MOOD TRACKER -->
-    <section class="card mood-card">
-      <h3>Mood Tracker</h3>
-      <div class="moods">
-        <button class="mood" data-mood="very_happy" title="Very happy">😄</button>
-        <button class="mood" data-mood="happy" title="Happy">🙂</button>
-        <button class="mood" data-mood="neutral" title="Neutral">😐</button>
-        <button class="mood" data-mood="frustrated" title="Frustrated">😤</button>
-        <button class="mood" data-mood="confident" title="Confident">😎</button>
-      </div>
-    </section>
+        <h3>Daily Reflection</h3>
+        <textarea id="reflection" rows="4" placeholder="How did the day go? What did you learn?"></textarea>
 
-    <!-- REFLECTION -->
-    <section class="card">
-      <h3>Daily Reflection</h3>
-      <textarea id="reflection" rows="5" placeholder="How did the day go? What did you learn?"></textarea>
-    </section>
-
-    <!-- GRATITUDE -->
-    <section class="card">
-      <h3>Gratitude</h3>
-      <textarea id="gratitude" rows="3" placeholder="1–3 things you're grateful for today"></textarea>
-    </section>
+        <h3>Gratitude</h3>
+        <textarea id="gratitude" rows="3" placeholder="1–3 things you’re grateful for today"></textarea>
+      </section>
+    </div>
   </main>
 
-  <!-- ADD / EDIT TRADE MODAL -->
-  <div id="tradeModal" class="modal hidden" aria-hidden="true">
+  <!-- ADD TRADE MODAL -->
+  <div id="tradeModal" class="modal hidden">
     <div class="modal-panel">
-      <h3 id="modalTitle">Add Trade</h3>
+      <h3>Add Trade</h3>
       <form id="tradeForm" class="modal-form">
-        <label>Pair <input id="pair" required placeholder="e.g., AAPL" /></label>
-        <label>Entry <input id="entry" type="number" step="any" required /></label>
-        <label>Exit <input id="exit" type="number" step="any" required /></label>
-        <label>RR <input id="rr" type="number" step="any" /></label>
-        <label>P&L <input id="pnl" type="number" step="any" required /></label>
-        <label>Notes <input id="notes" placeholder="Reasoning, plan, lessons" /></label>
-        <label>Screenshot <input id="screenshot" type="file" accept="image/*" /></label>
+        <label>Pair</label>
+        <input type="text" id="pair" placeholder="e.g. EUR/USD" required />
+
+        <label>Entry</label>
+        <input type="number" id="entry" step="any" required />
+
+        <label>Exit</label>
+        <input type="number" id="exit" step="any" required />
+
+        <label>R:R</label>
+        <input type="number" id="rr" step="any" />
+
+        <label>P&L</label>
+        <input type="number" id="pnl" step="any" />
+
+        <label>Notes</label>
+        <input type="text" id="notes" placeholder="Reasoning, plan, lessons" />
+
+        <label>Screenshot</label>
+        <input type="file" id="screenshot" accept="image/*" />
+        <div id="screenshotPreview"></div>
 
         <div class="modal-actions">
           <button type="button" id="cancelBtn">Cancel</button>
-          <button type="submit" class="accent" id="saveBtn">Save</button>
+          <button type="submit" class="accent">Save</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- IMAGE VIEWER MODAL -->
-  <div id="imgModal" class="modal hidden" aria-hidden="true">
-    <div class="modal-panel img-panel">
-      <button id="imgClose" class="img-close">✕</button>
-      <img id="imgViewer" src="" alt="screenshot preview" />
+  <div id="imgModal" class="modal hidden">
+    <div class="img-panel">
+      <img id="imgFull" src="" alt="Full view" />
     </div>
   </div>
 
-  <script src="day.js"></script>
+  <script>
+    // ============ BASIC SETUP ============
+    const dateParam = new URLSearchParams(window.location.search).get("date");
+    document.getElementById("dateTitle").textContent = "Trades for " + dateParam;
+
+    const backBtn = document.getElementById("backBtn");
+    const addTradeBtn = document.getElementById("addTradeBtn");
+    const tradeModal = document.getElementById("tradeModal");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const tradeForm = document.getElementById("tradeForm");
+    const tradeTableBody = document.querySelector("#tradeTable tbody");
+
+    const imgModal = document.getElementById("imgModal");
+    const imgFull = document.getElementById("imgFull");
+    const themeToggle = document.getElementById("themeToggle");
+
+    let trades = [];
+
+    // ============ NAVIGATION ============
+    backBtn.onclick = () => {
+      window.location.href = "index.html";
+    };
+
+    // ============ THEME MODE ============
+    themeToggle.onclick = () => {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+    };
+    if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
+
+    // ============ MODAL CONTROL ============
+    addTradeBtn.onclick = () => tradeModal.classList.remove("hidden");
+    cancelBtn.onclick = () => tradeModal.classList.add("hidden");
+
+    // ============ SCREENSHOT PREVIEW ============
+    document.getElementById("screenshot").addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      const preview = document.getElementById("screenshotPreview");
+      preview.innerHTML = "";
+      if (file) {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.className = "thumb";
+        preview.appendChild(img);
+      }
+    });
+
+    // ============ ADD TRADE ============
+    tradeForm.onsubmit = (e) => {
+      e.preventDefault();
+      const pair = pairInput.value;
+      const entry = entryInput.value;
+      const exit = exitInput.value;
+      const rr = rrInput.value;
+      const pnl = pnlInput.value;
+      const notes = notesInput.value;
+      const screenshot = screenshotInput.files[0]
+        ? URL.createObjectURL(screenshotInput.files[0])
+        : null;
+
+      const newTrade = { pair, entry, exit, rr, pnl, notes, screenshot };
+      trades.push(newTrade);
+      updateTable();
+      updateSummary();
+      tradeModal.classList.add("hidden");
+      tradeForm.reset();
+      document.getElementById("screenshotPreview").innerHTML = "";
+    };
+
+    const pairInput = document.getElementById("pair");
+    const entryInput = document.getElementById("entry");
+    const exitInput = document.getElementById("exit");
+    const rrInput = document.getElementById("rr");
+    const pnlInput = document.getElementById("pnl");
+    const notesInput = document.getElementById("notes");
+    const screenshotInput = document.getElementById("screenshot");
+
+    // ============ UPDATE TABLE ============
+    function updateTable() {
+      tradeTableBody.innerHTML = "";
+      trades.forEach((t, i) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${t.pair}</td>
+          <td>${t.entry}</td>
+          <td>${t.exit}</td>
+          <td>${t.rr}</td>
+          <td>${t.pnl}</td>
+          <td>${t.notes}</td>
+          <td>${t.screenshot ? `<img src="${t.screenshot}" class="thumb" data-index="${i}" />` : ""}</td>
+        `;
+        tradeTableBody.appendChild(row);
+      });
+    }
+
+    // ============ IMAGE ENLARGE ============
+    tradeTableBody.addEventListener("click", (e) => {
+      if (e.target.classList.contains("thumb")) {
+        imgFull.src = e.target.src;
+        imgModal.classList.remove("hidden");
+      }
+    });
+    imgModal.onclick = () => imgModal.classList.add("hidden");
+
+    // ============ UPDATE SUMMARY ============
+    function updateSummary() {
+      const tradesCount = trades.length;
+      const pnlValues = trades.map((t) => parseFloat(t.pnl) || 0);
+      const rrValues = trades.map((t) => parseFloat(t.rr) || 0);
+      const wins = pnlValues.filter((p) => p > 0);
+      const losses = pnlValues.filter((p) => p < 0);
+      const avgWin = wins.length ? (wins.reduce((a, b) => a + b, 0) / wins.length).toFixed(2) : 0;
+      const avgLoss = losses.length ? (losses.reduce((a, b) => a + b, 0) / losses.length).toFixed(2) : 0;
+      const totalRR = rrValues.reduce((a, b) => a + b, 0).toFixed(2);
+
+      document.getElementById("sumTrades").textContent = tradesCount;
+      document.getElementById("sumWin").textContent = avgWin;
+      document.getElementById("sumLoss").textContent = avgLoss;
+      document.getElementById("sumRR").textContent = totalRR;
+    }
+
+    // ============ MOOD TRACKER ============
+    const moods = document.querySelectorAll(".mood");
+    moods.forEach((m) =>
+      m.addEventListener("click", () => {
+        moods.forEach((btn) => btn.classList.remove("active"));
+        m.classList.add("active");
+      })
+    );
+  </script>
 </body>
 </html>
