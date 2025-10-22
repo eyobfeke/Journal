@@ -71,7 +71,7 @@ function renderCalendar() {
     }
 
     cell.addEventListener("click", () => {
-      window.location.href = `day.html?date=${dateStr}`;
+      window.location.href = `daily.html?date=${dateStr}`;
     });
 
     calendarEl.appendChild(cell);
