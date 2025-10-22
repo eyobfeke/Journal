@@ -32,10 +32,7 @@ function renderCalendar() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  let firstDay = new Date(year, month, 1).getDay();
-// make Monday the first day of the week (optional)
-firstDay = (firstDay + 6) % 7;
-
+  const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   monthYearEl.textContent = `${currentDate.toLocaleString("default", {
@@ -74,7 +71,7 @@ firstDay = (firstDay + 6) % 7;
     }
 
     cell.addEventListener("click", () => {
-      window.location.href = `entries/day.html?date=${dateStr}`;
+      window.location.href = `day.html?date=${dateStr}`;
     });
 
     calendarEl.appendChild(cell);
@@ -97,4 +94,3 @@ function getTradesForDate(date) {
 }
 
 renderCalendar();
-
