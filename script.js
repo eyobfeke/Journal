@@ -32,7 +32,10 @@ function renderCalendar() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  const firstDay = new Date(year, month, 1).getDay();
+  let firstDay = new Date(year, month, 1).getDay();
+// make Monday the first day of the week (optional)
+firstDay = (firstDay + 6) % 7;
+
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   monthYearEl.textContent = `${currentDate.toLocaleString("default", {
