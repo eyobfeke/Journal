@@ -1,9 +1,34 @@
+// ==== Calendar ====
 const calendarEl = document.getElementById("calendar");
 const monthYearEl = document.getElementById("monthYear");
+const themeBtn = document.getElementById("themeToggle");
 
 let currentDate = new Date();
 
+// ---- THEME ----
+function applyTheme(theme) {
+  if (theme === "dark") {
+    document.body.classList.add("dark");
+    themeBtn.textContent = "🌙";
+  } else {
+    document.body.classList.remove("dark");
+    themeBtn.textContent = "🌞";
+  }
+}
+
+let savedTheme = localStorage.getItem("theme") || "light";
+applyTheme(savedTheme);
+
+themeBtn.onclick = () => {
+  savedTheme = savedTheme === "light" ? "dark" : "light";
+  localStorage.setItem("theme", savedTheme);
+  applyTheme(savedTheme);
+};
+
+// ---- CALENDAR ----
 function renderCalendar() {
+  if (!calendarEl) return;
+
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
@@ -22,6 +47,7 @@ function renderCalendar() {
     calendarEl.appendChild(blank);
   }
 
+  // Render each day
   for (let day = 1; day <= daysInMonth; day++) {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
       day
@@ -68,5 +94,4 @@ function getTradesForDate(date) {
 }
 
 renderCalendar();
-<script src="script.js"></script>
 
