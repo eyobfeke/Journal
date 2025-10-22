@@ -160,17 +160,25 @@ td img.thumb:hover {
 
 .mood {
   /* ===== Calendar Layout ===== */
+main {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
 .calendar {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  padding: 20px;
+  grid-template-columns: repeat(7, minmax(120px, 1fr));
+  gap: 10px;
+  width: 90%;
+  max-width: 900px;
+  margin-top: 20px;
 }
 
 .day {
   background: var(--card-bg);
   color: var(--text);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 20px 10px;
   text-align: center;
   font-weight: 500;
@@ -180,6 +188,7 @@ td img.thumb:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .day:hover {
@@ -193,47 +202,22 @@ td img.thumb:hover {
   cursor: default;
 }
 
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--card-bg);
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
 .top-bar {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-top: 10px;
 }
 
-  width: 45px;
-  height: 45px;
-  font-size: 1.5rem;
-  border: 2px solid #999;
-  border-radius: 50%;
-  background: transparent;
-}
-
-.mood.active {
-  background: black;
-  color: white;
-}
-
-body.dark .mood.active {
-  background: white;
-  color: black;
-}
-
-/* ============= TEXTAREAS ============= */
-textarea {
-  width: 100%;
-  border-radius: 10px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  background: var(--bg-light);
-  color: var(--text-light);
-}
-
-body.dark textarea {
-  background: var(--bg-dark);
-  color: var(--text-dark);
-  border: 1px solid #444;
-}
 
 /* ============= MODAL (ADD TRADE FORM) ============= */
 .modal {
@@ -318,62 +302,4 @@ body.dark button.accent {
 button#themeToggle {
   background: none;
   font-size: 1.2rem;
-}
-/* ========== CALENDAR GRID FIX ========== */
-main {
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-}
-
-.calendar {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(120px, 1fr));
-  gap: 10px;
-  width: 90%;
-  max-width: 900px;
-  margin-top: 20px;
-}
-
-.day {
-  background: var(--card-bg);
-  color: var(--text);
-  border-radius: 12px;
-  padding: 20px 10px;
-  text-align: center;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.day:hover {
-  background: var(--accent);
-  color: #fff;
-  transform: scale(1.05);
-}
-
-.day.empty {
-  background: transparent;
-  cursor: default;
-}
-
-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: var(--card-bg);
-  padding: 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.top-bar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
 }
