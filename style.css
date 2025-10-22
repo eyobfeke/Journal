@@ -1,9 +1,26 @@
+:root {
+  --bg: #f5f6f8;
+  --text: #222;
+  --card: #fff;
+  --accent: #0078d4;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
+body.dark {
+  --bg: #1c1f26;
+  --text: #f2f2f2;
+  --card: #2b2f38;
+  --accent: #4aa3ff;
+  --shadow: rgba(0, 0, 0, 0.5);
+}
+
 body {
   font-family: "Segoe UI", sans-serif;
-  background: #f5f6f8;
+  background: var(--bg);
+  color: var(--text);
   margin: 0;
   padding: 0;
-  color: #222;
+  transition: background 0.3s, color 0.3s;
 }
 
 header {
@@ -19,7 +36,7 @@ header {
 }
 
 button {
-  background: #0078d4;
+  background: var(--accent);
   border: none;
   color: white;
   padding: 0.5rem 1rem;
@@ -28,7 +45,15 @@ button {
 }
 
 button:hover {
-  background: #005fa3;
+  opacity: 0.9;
+}
+
+.theme-btn {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--text);
+  font-size: 1.2rem;
+  padding: 0.4rem 0.8rem;
 }
 
 .calendar {
@@ -41,12 +66,13 @@ button:hover {
 }
 
 .day {
-  background: white;
+  background: var(--card);
   border-radius: 10px;
   min-height: 130px;
   padding: 0.5rem;
-  box-shadow: 0 0 4px rgba(0,0,0,0.1);
+  box-shadow: 0 0 4px var(--shadow);
   position: relative;
+  transition: background 0.3s, color 0.3s;
 }
 
 .day-number {
@@ -54,7 +80,7 @@ button:hover {
   top: 8px;
   right: 10px;
   font-weight: bold;
-  color: #555;
+  color: var(--text);
 }
 
 .trades {
@@ -69,10 +95,14 @@ button:hover {
   border-radius: 4px;
 }
 
-.trade.long { color: #008000; }
-.trade.short { color: #c0392b; }
-
-h1, h2 {
-  margin: 0.2rem 0;
+body.dark .trade {
+  background: #334155;
 }
 
+.trade.long {
+  color: #00b300;
+}
+
+.trade.short {
+  color: #ff5c5c;
+}
