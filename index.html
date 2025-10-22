@@ -1,6 +1,24 @@
-index.html        ← Monthly calendar view
-day.html          ← Individual date trade log
-style.css         ← All styling
-script.js         ← Shared JavaScript (calendar logic, storage)
-entries/          ← (Optional) folder for backups or future features
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trade Journal Calendar</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>📈 Trade Journal</h1>
+    <div class="month-nav">
+      <button id="prevMonth">←</button>
+      <h2 id="monthYear"></h2>
+      <button id="nextMonth">→</button>
+    </div>
+  </header>
+
+  <main id="calendar" class="calendar"></main>
+
+  <script src="script.js"></script>
+</body>
+</html>
 
