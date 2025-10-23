@@ -1,25 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Trade Journal Calendar</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: "Inter", sans-serif;
+      transition: background 0.3s, color 0.3s;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Light theme */
+    body {
+      background-color: #f8f9fa;
+      color: #111;
+    }
+
+    /* Dark theme */
+    body.dark {
+      background-color: #0f1115;
+      color: #f9f9f9;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--header-bg, #1e1e1e);
+      color: var(--header-text, #fff);
+      padding: 12px 24px;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .dark header {
+      background: #1e1e1e;
+      color: #f9f9f9;
+    }
+
+    .calendar-container {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      padding: 30px;
+      margin: 20px auto;
+      max-width: 900px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      transition: background 0.3s;
+    }
+
+    body:not(.dark) .calendar-container {
+      background: #fff;
+      border: 1px solid #ddd;
+    }
+
+    .day {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .dark .day {
+      background: #1c1f26;
+    }
+
+    body:not(.dark) .day {
+      background: #f0f0f0;
+    }
+
+    .day:hover {
+      transform: scale(1.03);
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .controls button {
+      background: #3b82f6;
+      border: none;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .controls button:hover {
+      background: #2563eb;
+    }
+
+    #theme-toggle {
+      background: #3b82f6;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #theme-toggle:hover {
+      background: #2563eb;
+    }
+  </style>
 </head>
+
 <body>
   <header>
-    <h1>📈 Trade Journal</h1>
-    <div class="month-nav">
-      <button id="prevMonth">←</button>
-      <h2 id="monthYear"></h2>
-      <button id="nextMonth">→</button>
-      <button id="themeToggle" class="theme-btn">🌞</button>
+    <h2>📘 Trade Journal</h2>
+    <div class="controls">
+      <button id="prev-month">◀</button>
+      <span id="month-year">October 2025</span>
+      <button id="next-month">▶</button>
+      <button id="theme-toggle">☀️ Light Mode</button>
     </div>
   </header>
 
-  <main id="calendar" class="calendar"></main>
+  <main>
+    <div class="calendar-container" id="calendar"></div>
+  </main>
 
-  <!-- Make sure script is loaded last -->
-  <script src="script.js"></script>
+  <script>
+    // ---- THEME TOGGLE ----
+    document.addEventListener("DOMContentLoaded", () => {
+      const themeBtn = document.getElementById("theme-toggle");
+
+      const savedTheme = localStorage.getItem("theme") || "light";
+      applyTheme(savedTheme);
+
+      themeBtn.addEventListener("click", () => {
+        const newTheme = document.body.classList.contains("dark") ? "light" : "dark";
+        localStorage.setItem("theme", newTheme);
+        applyTheme(newTheme);
+      });
+
+      function applyTheme(theme) {
+        if (theme === "dark") {
+          document.body.classList.add("dark");
+          themeBtn.textContent = "🌙 Dark Mode";
+        } else {
+          document.body.classList.remove("dark");
+          themeBtn.textContent = "☀️ Light Mode";
+        }
+      }
+    });
+
+    // ---- CALENDAR GENERATION ----
+    const calendar = document.getElementById("calendar");
+    const monthYear = document.getElementById("month-year");
+    const prevBtn = document.getElementById("prev-month");
+    const nextBtn = document.getElementById("next-month");
+
+    let currentDate = new Date();
+
+    function renderCalendar() {
+      calendar.innerHTML = "";
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      monthYear.textContent = `${currentDate.toLocaleString("default", { month: "long" })} ${year}`;
+
+      for (let i = 1; i <= lastDay.getDate(); i++) {
+        const day = document.createElement("div");
+        day.classList.add("day");
+        day.textContent = i;
+
+        day.addEventListener("click", () => {
+          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+          window.location.href = `daily.html?date=${dateStr}`;
+        });
+
+        calendar.appendChild(day);
+      }
+    }
+
+    prevBtn.addEventListener("click", () => {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    });
+
+    renderCalendar();
+  </script>
 </body>
 </html>
