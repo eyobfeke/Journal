@@ -6,6 +6,36 @@
   <title>Daily Trade Journal</title>
   <link rel="stylesheet" href="style.css" />
   <style>
+    :root {
+      --bg-light: #f8f9fa;
+      --text-light: #222;
+      --card-light: #ffffff;
+      --shadow-light: rgba(0,0,0,0.1);
+      --accent-light: #3b82f6;
+
+      --bg-dark: #0f172a;
+      --text-dark: #e2e8f0;
+      --card-dark: #1e293b;
+      --shadow-dark: rgba(255,255,255,0.1);
+      --accent-dark: #60a5fa;
+    }
+
+    body.light {
+      --bg: var(--bg-light);
+      --text: var(--text-light);
+      --card: var(--card-light);
+      --shadow: var(--shadow-light);
+      --accent: var(--accent-light);
+    }
+
+    body.dark {
+      --bg: var(--bg-dark);
+      --text: var(--text-dark);
+      --card: var(--card-dark);
+      --shadow: var(--shadow-dark);
+      --accent: var(--accent-dark);
+    }
+
     body {
       font-family: "Inter", sans-serif;
       background-color: var(--bg);
@@ -89,7 +119,7 @@
       min-height: 70px;
     }
 
-    .save-btn {
+    .btn {
       background: var(--accent);
       color: #fff;
       border: none;
@@ -100,26 +130,12 @@
       margin-top: 10px;
     }
 
-    .save-btn:hover {
-      opacity: 0.9;
-    }
+    .btn:hover { opacity: 0.9; }
 
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 25px;
-    }
-
-    .mood-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .mood-option {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
 
     footer {
@@ -128,17 +144,41 @@
       color: #888;
       font-size: 0.8rem;
     }
+
+    .theme-toggle {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    .theme-toggle button {
+      background: none;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .theme-toggle button:hover {
+      background: var(--accent);
+      color: #fff;
+    }
   </style>
 </head>
-<body>
+<body class="light">
   <h1 id="pageTitle">📘 Journal for DATE</h1>
   <a href="index.html">← Back to Calendar</a>
+
+  <div class="theme-toggle">
+    <button id="toggleTheme">🌗 Toggle Theme</button>
+  </div>
 
   <div class="container">
     <!-- TRADE DETAILS -->
     <div class="card">
       <h2>📊 Trade Details</h2>
-      <table>
+      <table id="tradeTable">
         <thead>
           <tr>
             <th>Pair</th>
@@ -146,23 +186,25 @@
             <th>Exit</th>
             <th>R:R</th>
             <th>Notes</th>
-            <th>PnL</th>
+            <th>PnL ($)</th>
             <th>Screenshot</th>
+            <th>❌</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="tradeBody">
           <tr>
             <td><input type="text" placeholder="EUR/USD"></td>
-            <td><input type="text" placeholder="1.0850"></td>
-            <td><input type="text" placeholder="1.0900"></td>
+            <td><input type="number" placeholder="1.0850"></td>
+            <td><input type="number" placeholder="1.0900"></td>
             <td><input type="text" placeholder="1:3"></td>
             <td><textarea placeholder="Setup notes..."></textarea></td>
-            <td><input type="text" placeholder="$50"></td>
+            <td><input type="number" class="pnl" placeholder="50"></td>
             <td><input type="file" accept="image/*"></td>
+            <td><button class="deleteRow">🗑</button></td>
           </tr>
         </tbody>
       </table>
-      <button class="save-btn">💾 Save Trade</button>
+      <button class="btn" id="addTrade">➕ Add Trade</button>
     </div>
 
     <!-- TRADE SUMMARY -->
@@ -175,18 +217,14 @@
             <th>Avg Loss</th>
             <th>Total RR</th>
             <th>Win Rate</th>
-            <th>Invalid Loss</th>
-            <th>Missed Wins</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><input type="text" placeholder="$"></td>
-            <td><input type="text" placeholder="$"></td>
-            <td><input type="text" placeholder="1:2"></td>
-            <td><input type="text" placeholder="%"></td>
-            <td><input type="checkbox"></td>
-            <td><input type="checkbox"></td>
+            <td id="avgWin">$0</td>
+            <td id="avgLoss">$0</td>
+            <td id="totalRR">0</td>
+            <td id="winRate">0%</td>
           </tr>
         </tbody>
       </table>
@@ -203,31 +241,71 @@
         <textarea placeholder="Things you are grateful for..."></textarea>
       </div>
     </div>
-
-    <div class="grid-2">
-      <div class="card">
-        <h2>🎯 Tomorrow’s Goals</h2>
-        <textarea placeholder="What to improve tomorrow?"></textarea>
-      </div>
-      <div class="card">
-        <h2>🌞 Mood Tracker</h2>
-        <div class="mood-group">
-          <label class="mood-option">😊 Happy <input type="radio" name="mood"></label>
-          <label class="mood-option">😐 Neutral <input type="radio" name="mood"></label>
-          <label class="mood-option">😔 Sad <input type="radio" name="mood"></label>
-          <label class="mood-option">😩 Stressed <input type="radio" name="mood"></label>
-          <label class="mood-option">💪 Confident <input type="radio" name="mood"></label>
-        </div>
-      </div>
-    </div>
   </div>
 
   <footer>Made with ❤️ using GitHub Pages</footer>
 
   <script>
+    // Date Title
     const params = new URLSearchParams(window.location.search);
     const date = params.get("date");
     if (date) document.getElementById("pageTitle").textContent = "📘 Journal for " + date;
+
+    // Theme toggle
+    const themeBtn = document.getElementById("toggleTheme");
+    themeBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      document.body.classList.toggle("light");
+    });
+
+    // Add new trade row
+    const tradeBody = document.getElementById("tradeBody");
+    document.getElementById("addTrade").addEventListener("click", () => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td><input type="text" placeholder="EUR/USD"></td>
+        <td><input type="number" placeholder="1.0850"></td>
+        <td><input type="number" placeholder="1.0900"></td>
+        <td><input type="text" placeholder="1:3"></td>
+        <td><textarea placeholder="Setup notes..."></textarea></td>
+        <td><input type="number" class="pnl" placeholder="50"></td>
+        <td><input type="file" accept="image/*"></td>
+        <td><button class="deleteRow">🗑</button></td>`;
+      tradeBody.appendChild(row);
+    });
+
+    // Delete row
+    document.addEventListener("click", (e) => {
+      if (e.target.classList.contains("deleteRow")) {
+        e.target.closest("tr").remove();
+        calculateSummary();
+      }
+    });
+
+    // Auto summary calculation
+    document.addEventListener("input", (e) => {
+      if (e.target.classList.contains("pnl")) calculateSummary();
+    });
+
+    function calculateSummary() {
+      const pnls = Array.from(document.querySelectorAll(".pnl")).map(p => parseFloat(p.value) || 0);
+      if (pnls.length === 0) return;
+
+      const wins = pnls.filter(v => v > 0);
+      const losses = pnls.filter(v => v < 0);
+      const total = pnls.reduce((a,b) => a+b, 0);
+
+      const avgWin = wins.length ? (wins.reduce((a,b) => a+b,0)/wins.length).toFixed(2) : 0;
+      const avgLoss = losses.length ? (losses.reduce((a,b) => a+b,0)/losses.length).toFixed(2) : 0;
+      const winRate = ((wins.length / pnls.length) * 100).toFixed(1);
+      const totalRR = (wins.length - losses.length).toFixed(1);
+
+      document.getElementById("avgWin").textContent = `$${avgWin}`;
+      document.getElementById("avgLoss").textContent = `$${avgLoss}`;
+      document.getElementById("winRate").textContent = `${winRate}%`;
+      document.getElementById("totalRR").textContent = totalRR;
+    }
   </script>
 </body>
 </html>
+
