@@ -138,14 +138,18 @@
 
     .mood-group {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      justify-content: space-around;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
     }
 
     .mood-option {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
+      font-size: 0.9rem;
     }
 
     footer {
@@ -173,6 +177,15 @@
     .theme-toggle button:hover {
       background: var(--accent);
       color: #fff;
+    }
+
+    #saveBtn {
+      width: 95%;
+      max-width: 1200px;
+      display: block;
+      margin: 20px auto 0;
+      font-size: 1rem;
+      padding: 12px;
     }
   </style>
 </head>
@@ -260,17 +273,17 @@
       <div class="card">
         <h2>🌞 Mood Tracker</h2>
         <div class="mood-group" id="moodGroup">
-          <label class="mood-option">😊 Happy <input type="radio" name="mood" value="happy"></label>
-          <label class="mood-option">😐 Neutral <input type="radio" name="mood" value="neutral"></label>
-          <label class="mood-option">😔 Sad <input type="radio" name="mood" value="sad"></label>
-          <label class="mood-option">😩 Stressed <input type="radio" name="mood" value="stressed"></label>
-          <label class="mood-option">💪 Confident <input type="radio" name="mood" value="confident"></label>
+          <label class="mood-option">😊<input type="radio" name="mood" value="happy"></label>
+          <label class="mood-option">😐<input type="radio" name="mood" value="neutral"></label>
+          <label class="mood-option">😔<input type="radio" name="mood" value="sad"></label>
+          <label class="mood-option">😩<input type="radio" name="mood" value="stressed"></label>
+          <label class="mood-option">💪<input type="radio" name="mood" value="confident"></label>
         </div>
       </div>
     </div>
-
-    <button class="btn" id="saveBtn">💾 Save All</button>
   </div>
+
+  <button class="btn" id="saveBtn">💾 Save All</button>
 
   <footer>Made with ❤️ using GitHub Pages</footer>
 
@@ -279,14 +292,13 @@
     const date = params.get("date");
     if (date) document.getElementById("pageTitle").textContent = "📘 Journal for " + date;
 
-    // Theme
-    const themeBtn = document.getElementById("toggleTheme");
-    themeBtn.addEventListener("click", () => {
+    // Theme toggle
+    document.getElementById("toggleTheme").addEventListener("click", () => {
       document.body.classList.toggle("dark");
       document.body.classList.toggle("light");
     });
 
-    // Add / Delete trades
+    // Add trade
     const tradeBody = document.getElementById("tradeBody");
     document.getElementById("addTrade").addEventListener("click", () => {
       const row = document.createElement("tr");
@@ -306,7 +318,7 @@
       if (e.target.classList.contains("deleteRow")) e.target.closest("tr").remove();
     });
 
-    // Calculate summary
+    // Auto Summary
     document.addEventListener("input", e => {
       if (e.target.classList.contains("pnl")) calculateSummary();
     });
@@ -326,11 +338,8 @@
       document.getElementById("totalRR").textContent = totalRR;
     }
 
-    // Save & Load
-    const saveBtn = document.getElementById("saveBtn");
-    saveBtn.addEventListener("click", saveData);
-
-    function saveData() {
+    // Save data
+    document.getElementById("saveBtn").addEventListener("click", () => {
       const trades = Array.from(document.querySelectorAll("#tradeBody tr")).map(tr => ({
         pair: tr.querySelectorAll("input,textarea")[0].value,
         entry: tr.querySelectorAll("input,textarea")[1].value,
@@ -348,8 +357,9 @@
       };
       localStorage.setItem(`journal-${date}`, JSON.stringify(data));
       alert("✅ Saved!");
-    }
+    });
 
+    // Load data
     window.addEventListener("load", () => {
       const saved = localStorage.getItem(`journal-${date}`);
       if (!saved) return;
