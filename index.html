@@ -3,24 +3,181 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trade Journal Calendar</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Trade Journal</title>
+  <style>
+    :root {
+      --bg: #f4f4f9;
+      --text: #222;
+      --card: #fff;
+      --accent: #007bff;
+      --border: #ddd;
+    }
+    body.dark {
+      --bg: #1e1f22;
+      --text: #e4e6eb;
+      --card: #2b2d31;
+      --accent: #2d88ff;
+      --border: #444;
+    }
+    body {
+      font-family: "Inter", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .month-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .month-nav h2 {
+      font-size: 1rem;
+      margin: 0 0.5rem;
+    }
+
+    .theme-btn {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--text);
+      transition: 0.3s;
+    }
+
+    .theme-btn:hover {
+      color: var(--accent);
+    }
+
+    .calendar {
+      max-width: 800px;
+      margin: 2rem auto;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+      background: var(--card);
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .day {
+      text-align: center;
+      padding: 0.7rem 0.3rem;
+      border-radius: 6px;
+      background: var(--bg);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .day:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.85rem;
+      color: #777;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1>📈 Trade Journal</h1>
-
+    <h1>📒 Trade Journal</h1>
     <div class="month-nav">
-      <button id="prevMonth">←</button>
+      <button onclick="prevMonth()">◀</button>
       <h2 id="monthYear"></h2>
-      <button id="nextMonth">→</button>
-      <button id="themeToggle" class="theme-btn">🌞</button>
+      <button onclick="nextMonth()">▶</button>
+      <button class="theme-btn" onclick="toggleTheme()">🌙</button>
     </div>
   </header>
 
-  <main id="calendar" class="calendar"></main>
+  <main>
+    <div id="calendar" class="calendar"></div>
+  </main>
 
-  <!-- Make sure script is loaded last -->
-  <script src="script.js"></script>
+  <footer>Made with ❤️ using GitHub Pages</footer>
+
+  <script>
+    const calendar = document.getElementById("calendar");
+    const monthYear = document.getElementById("monthYear");
+    let today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+
+    function renderCalendar(month, year) {
+      calendar.innerHTML = "";
+      const firstDay = new Date(year, month).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const monthName = new Date(year, month).toLocaleString("default", { month: "long" });
+      monthYear.textContent = `${monthName} ${year}`;
+
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement("div");
+        calendar.appendChild(empty);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement("div");
+        cell.classList.add("day");
+        cell.textContent = day;
+        cell.onclick = () => {
+          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+          window.location.href = `daily.html?date=${dateStr}`;
+        };
+        calendar.appendChild(cell);
+      }
+    }
+
+    function prevMonth() {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar(currentMonth, currentYear);
+    }
+
+    function nextMonth() {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar(currentMonth, currentYear);
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+      localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+    }
+
+    window.onload = () => {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") document.body.classList.add("dark");
+      renderCalendar(currentMonth, currentYear);
+    };
+  </script>
 </body>
 </html>
