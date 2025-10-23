@@ -10,6 +10,15 @@ const themeBtn = document.getElementById("themeToggle");
 dateTitle.textContent = `Trades for ${date}`;
 
 // ===== THEME TOGGLE =====
+const savedTheme = localStorage.getItem("theme") || "light";
+applyTheme(savedTheme);
+
+themeBtn.onclick = () => {
+  const newTheme = document.body.classList.contains("dark") ? "light" : "dark";
+  localStorage.setItem("theme", newTheme);
+  applyTheme(newTheme);
+};
+
 function applyTheme(theme) {
   if (theme === "dark") {
     document.body.classList.add("dark");
@@ -19,15 +28,6 @@ function applyTheme(theme) {
     themeBtn.textContent = "🌞";
   }
 }
-
-let savedTheme = localStorage.getItem("theme") || "light";
-applyTheme(savedTheme);
-
-themeBtn.onclick = () => {
-  savedTheme = savedTheme === "light" ? "dark" : "light";
-  localStorage.setItem("theme", savedTheme);
-  applyTheme(savedTheme);
-};
 
 // ===== BACK BUTTON =====
 backBtn.onclick = () => {
