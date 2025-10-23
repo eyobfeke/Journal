@@ -209,3 +209,75 @@ textarea {
   background: var(--accent);
   color: #fff;
 }
+/* ==========================
+   MATCH OUTSIDE TO INSIDE STYLE
+========================== */
+
+body {
+  background: #0d1117;
+  color: #f0f6fc;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+header {
+  background: #161b22;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  border-bottom: 1px solid #30363d;
+  padding: 1rem 0;
+}
+
+header h1 {
+  color: #f0f6fc;
+}
+
+button {
+  background: #238636;
+  border: 1px solid #2ea043;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #2ea043;
+  transform: scale(1.03);
+}
+
+.calendar {
+  background: #161b22;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 0 12px rgba(0,0,0,0.4);
+  margin-top: 1rem;
+}
+
+.day {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #f0f6fc;
+}
+
+.day:hover {
+  background: #2d333b;
+  transform: translateY(-2px);
+}
+
+.day-number {
+  color: #58a6ff;
+  font-weight: bold;
+}
+
+.trade {
+  background: rgba(56, 139, 253, 0.15);
+  color: #a5d6ff;
+}
+
+.trade.long {
+  color: #3fb950;
+}
+
+.trade.short {
+  color: #f85149;
+}
