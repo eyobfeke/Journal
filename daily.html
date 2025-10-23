@@ -68,9 +68,7 @@
       text-decoration: none;
     }
 
-    a:hover {
-      text-decoration: underline;
-    }
+    a:hover { text-decoration: underline; }
 
     .card {
       background: var(--card);
@@ -136,6 +134,18 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 25px;
+    }
+
+    .mood-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mood-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     footer {
@@ -234,31 +244,49 @@
     <div class="grid-2">
       <div class="card">
         <h2>📝 Daily Reflection</h2>
-        <textarea placeholder="What did you learn today?"></textarea>
+        <textarea id="reflection" placeholder="What did you learn today?"></textarea>
       </div>
       <div class="card">
         <h2>🙏 Gratitude</h2>
-        <textarea placeholder="Things you are grateful for..."></textarea>
+        <textarea id="gratitude" placeholder="Things you are grateful for..."></textarea>
       </div>
     </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>🎯 Tomorrow’s Goals</h2>
+        <textarea id="goals" placeholder="What to improve tomorrow?"></textarea>
+      </div>
+      <div class="card">
+        <h2>🌞 Mood Tracker</h2>
+        <div class="mood-group" id="moodGroup">
+          <label class="mood-option">😊 Happy <input type="radio" name="mood" value="happy"></label>
+          <label class="mood-option">😐 Neutral <input type="radio" name="mood" value="neutral"></label>
+          <label class="mood-option">😔 Sad <input type="radio" name="mood" value="sad"></label>
+          <label class="mood-option">😩 Stressed <input type="radio" name="mood" value="stressed"></label>
+          <label class="mood-option">💪 Confident <input type="radio" name="mood" value="confident"></label>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" id="saveBtn">💾 Save All</button>
   </div>
 
   <footer>Made with ❤️ using GitHub Pages</footer>
 
   <script>
-    // Date Title
     const params = new URLSearchParams(window.location.search);
     const date = params.get("date");
     if (date) document.getElementById("pageTitle").textContent = "📘 Journal for " + date;
 
-    // Theme toggle
+    // Theme
     const themeBtn = document.getElementById("toggleTheme");
     themeBtn.addEventListener("click", () => {
       document.body.classList.toggle("dark");
       document.body.classList.toggle("light");
     });
 
-    // Add new trade row
+    // Add / Delete trades
     const tradeBody = document.getElementById("tradeBody");
     document.getElementById("addTrade").addEventListener("click", () => {
       const row = document.createElement("tr");
@@ -274,38 +302,83 @@
       tradeBody.appendChild(row);
     });
 
-    // Delete row
-    document.addEventListener("click", (e) => {
-      if (e.target.classList.contains("deleteRow")) {
-        e.target.closest("tr").remove();
-        calculateSummary();
-      }
+    document.addEventListener("click", e => {
+      if (e.target.classList.contains("deleteRow")) e.target.closest("tr").remove();
     });
 
-    // Auto summary calculation
-    document.addEventListener("input", (e) => {
+    // Calculate summary
+    document.addEventListener("input", e => {
       if (e.target.classList.contains("pnl")) calculateSummary();
     });
 
     function calculateSummary() {
       const pnls = Array.from(document.querySelectorAll(".pnl")).map(p => parseFloat(p.value) || 0);
       if (pnls.length === 0) return;
-
       const wins = pnls.filter(v => v > 0);
       const losses = pnls.filter(v => v < 0);
-      const total = pnls.reduce((a,b) => a+b, 0);
-
       const avgWin = wins.length ? (wins.reduce((a,b) => a+b,0)/wins.length).toFixed(2) : 0;
       const avgLoss = losses.length ? (losses.reduce((a,b) => a+b,0)/losses.length).toFixed(2) : 0;
       const winRate = ((wins.length / pnls.length) * 100).toFixed(1);
       const totalRR = (wins.length - losses.length).toFixed(1);
-
       document.getElementById("avgWin").textContent = `$${avgWin}`;
       document.getElementById("avgLoss").textContent = `$${avgLoss}`;
       document.getElementById("winRate").textContent = `${winRate}%`;
       document.getElementById("totalRR").textContent = totalRR;
     }
+
+    // Save & Load
+    const saveBtn = document.getElementById("saveBtn");
+    saveBtn.addEventListener("click", saveData);
+
+    function saveData() {
+      const trades = Array.from(document.querySelectorAll("#tradeBody tr")).map(tr => ({
+        pair: tr.querySelectorAll("input,textarea")[0].value,
+        entry: tr.querySelectorAll("input,textarea")[1].value,
+        exit: tr.querySelectorAll("input,textarea")[2].value,
+        rr: tr.querySelectorAll("input,textarea")[3].value,
+        notes: tr.querySelectorAll("input,textarea")[4].value,
+        pnl: tr.querySelector(".pnl").value
+      }));
+      const data = {
+        trades,
+        reflection: document.getElementById("reflection").value,
+        gratitude: document.getElementById("gratitude").value,
+        goals: document.getElementById("goals").value,
+        mood: document.querySelector("input[name='mood']:checked")?.value || ""
+      };
+      localStorage.setItem(`journal-${date}`, JSON.stringify(data));
+      alert("✅ Saved!");
+    }
+
+    window.addEventListener("load", () => {
+      const saved = localStorage.getItem(`journal-${date}`);
+      if (!saved) return;
+      const data = JSON.parse(saved);
+      if (data.trades) {
+        tradeBody.innerHTML = "";
+        data.trades.forEach(t => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><input type="text" value="${t.pair || ""}"></td>
+            <td><input type="number" value="${t.entry || ""}"></td>
+            <td><input type="number" value="${t.exit || ""}"></td>
+            <td><input type="text" value="${t.rr || ""}"></td>
+            <td><textarea>${t.notes || ""}</textarea></td>
+            <td><input type="number" class="pnl" value="${t.pnl || ""}"></td>
+            <td><input type="file" accept="image/*"></td>
+            <td><button class="deleteRow">🗑</button></td>`;
+          tradeBody.appendChild(row);
+        });
+      }
+      document.getElementById("reflection").value = data.reflection || "";
+      document.getElementById("gratitude").value = data.gratitude || "";
+      document.getElementById("goals").value = data.goals || "";
+      if (data.mood) {
+        const moodEl = document.querySelector(`input[name='mood'][value='${data.mood}']`);
+        if (moodEl) moodEl.checked = true;
+      }
+      calculateSummary();
+    });
   </script>
 </body>
 </html>
-
