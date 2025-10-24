@@ -1,5 +1,6 @@
 /* === Base Theme Variables === */
 :root {
+  /* Light Mode */
   --bg: #f5f6f7;
   --text: #1c1c1c;
   --card: #ffffff;
@@ -8,10 +9,11 @@
 }
 
 body.dark {
-  --bg: #1e1f22;
-  --text: #e4e6eb;
-  --card: #2b2d31;
-  --accent: #2d88ff;
+  /* Blue-black Notion-like Dark Mode */
+  --bg: #0e1116; /* deep blue-black background */
+  --text: #e4e6eb; /* soft white text */
+  --card: #1b1f26; /* slightly lighter card color */
+  --accent: #3b82f6; /* Notion-style blue accent */
   --shadow: rgba(0, 0, 0, 0.3);
 }
 
@@ -82,35 +84,35 @@ button:hover {
 }
 
 /* === Calendar Grid === */
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0;
+  background: none;
+  border: none; /* removed outer grid */
+  box-shadow: none; /* removed shadow border */
+}
+
 .day {
   aspect-ratio: 1 / 1;
-  background: var(--bg);
-  border: 1px solid var(--shadow);
+  background: var(--card); /* smoother contrast */
+  border: none; /* removed borders between cells */
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem; /* Increased from 1.2rem */
+  font-size: 2rem;
   font-weight: 600;
   color: var(--text);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.calendar div {
-  background: var(--bg);
-  border-radius: 12px;
-  padding: 1.5rem;
-  text-align: center;
-  font-weight: 600;
-  font-size: 1rem;
-  border: 1px solid var(--shadow);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.calendar div:hover {
-  transform: scale(1.04);
+.day:hover {
+  transform: scale(1.05);
   background: var(--accent);
   color: white;
 }
@@ -122,4 +124,3 @@ footer {
   color: var(--text);
   opacity: 0.7;
 }
-
