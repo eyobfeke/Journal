@@ -1,14 +1,4 @@
-/* === General Layout === */
-body {
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg);
-  color: var(--text);
-  transition: background-color 0.3s, color 0.3s;
-}
-
-/* === Theme Variables === */
+/* === Theme Variables (Global) === */
 :root {
   --bg: #f5f7fa;
   --text: #1c1c1c;
@@ -17,12 +7,22 @@ body {
   --shadow: rgba(0, 0, 0, 0.05);
 }
 
-body.dark {
+.dark {
   --bg: #1e1f22;
   --text: #e4e6eb;
   --card: #2b2d31;
   --accent: #2d88ff;
   --shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* === General Layout === */
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 /* === Header === */
@@ -36,13 +36,7 @@ header {
   position: relative;
 }
 
-.month-nav {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  justify-content: center;
-}
-
+/* === Title === */
 h1 {
   position: absolute;
   left: 2rem;
@@ -56,12 +50,15 @@ h1 {
 .month-nav {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .month-nav h2 {
-  font-size: 1.1rem;
-  margin: 0 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text);
 }
 
 button {
@@ -72,17 +69,19 @@ button {
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, transform 0.2s;
 }
 
 button:hover {
   opacity: 0.85;
+  transform: scale(1.05);
 }
 
 .theme-btn {
   background: transparent;
   color: var(--text);
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  border: none;
 }
 
 /* === Calendar === */
@@ -95,23 +94,34 @@ button:hover {
   border-radius: 16px;
   box-shadow: 0 4px 16px var(--shadow);
   max-width: 1100px;
-  margin: 0 auto;
+  margin: 2rem auto;
 }
 
 .calendar div {
   background: var(--bg);
   border-radius: 12px;
-  padding: 1rem;
+  padding: 1.5rem 1rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid var(--shadow);
+  font-weight: 600;
+  font-size: 1rem;
 }
 
 .calendar div:hover {
-  transform: scale(1.04);
+  transform: scale(1.05);
   background: var(--accent);
   color: white;
+}
+
+/* === Footer === */
+footer {
+  text-align: center;
+  margin: 2rem 0;
+  font-size: 0.85rem;
+  color: var(--text);
+  opacity: 0.8;
 }
 
 /* === Responsive === */
@@ -121,17 +131,13 @@ button:hover {
     align-items: flex-start;
     gap: 0.8rem;
   }
-/* Center month name and make it bigger */
-.month-header {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* centers it */
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+
+  .calendar {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  }
+
+  .month-nav h2 {
+    font-size: 1.3rem;
+  }
 }
 
-.month-header span {
-  font-size: 1.6rem; /* make month text larger */
-  font-weight: 700;
-  color: var(--text);
-}
