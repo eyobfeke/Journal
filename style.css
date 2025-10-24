@@ -1,16 +1,6 @@
-/* === Base Layout === */
-body {
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg);
-  color: var(--text);
-  transition: background-color 0.3s, color 0.3s;
-}
-
-/* === Theme Variables === */
+/* === Base Theme Variables === */
 :root {
-  --bg: #f5f6f8;
+  --bg: #f5f6f7;
   --text: #1c1c1c;
   --card: #ffffff;
   --accent: #4a90e2;
@@ -25,21 +15,33 @@ body.dark {
   --shadow: rgba(0, 0, 0, 0.3);
 }
 
+/* === General Layout === */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s, color 0.3s;
+}
+
 /* === Header === */
 header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: var(--card);
+  box-shadow: 0 2px 8px var(--shadow);
   padding: 1rem 2rem;
-  box-shadow: 0 2px 6px var(--shadow);
+  border-radius: 0 0 12px 12px;
 }
 
 h1 {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   gap: 8px;
+  margin: 0;
 }
 
 .month-nav {
@@ -47,14 +49,16 @@ h1 {
   align-items: center;
   gap: 1rem;
   justify-content: center;
+  flex-grow: 1;
 }
 
 .month-nav h2 {
   font-size: 1.5rem;
   margin: 0;
-  text-align: center;
+  font-weight: 700;
 }
 
+/* === Buttons === */
 button {
   border: none;
   background: var(--accent);
@@ -62,7 +66,7 @@ button {
   padding: 6px 10px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
   transition: opacity 0.2s;
 }
 
@@ -74,35 +78,36 @@ button:hover {
   background: transparent;
   color: var(--text);
   font-size: 1.3rem;
+  cursor: pointer;
 }
 
-/* === Calendar (Notion-style wide grid) === */
+/* === Calendar Grid === */
 .calendar {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1rem;
   padding: 2rem;
   background: var(--card);
   border-radius: 16px;
   box-shadow: 0 4px 16px var(--shadow);
-  max-width: 1400px;
-  margin: 3rem auto;
+  max-width: 1200px;
+  margin: 2rem auto;
 }
 
 .calendar div {
   background: var(--bg);
-  border-radius: 14px;
-  padding: 2rem 0;
+  border-radius: 12px;
+  padding: 1.5rem;
   text-align: center;
-  font-size: 1.2rem;
   font-weight: 600;
-  cursor: pointer;
+  font-size: 1rem;
   border: 1px solid var(--shadow);
-  transition: all 0.25s ease;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .calendar div:hover {
-  transform: scale(1.05);
+  transform: scale(1.04);
   background: var(--accent);
   color: white;
 }
@@ -111,7 +116,7 @@ button:hover {
 footer {
   text-align: center;
   padding: 1rem;
-  font-size: 0.9rem;
   color: var(--text);
   opacity: 0.7;
 }
+
