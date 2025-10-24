@@ -9,12 +9,11 @@
 }
 
 body.dark {
-  /* Blue-black Notion-like Dark Mode */
-  --bg: #0e1116; /* deep blue-black */
-  --text: #e4e6eb; /* soft white text */
-  --card: #1b1f26; /* slightly lighter than bg */
-  --accent: #3b82f6; /* Notion-style blue accent */
-  --shadow: rgba(0, 0, 0, 0.4);
+  --bg: #181a1f; /* bluish black */
+  --text: #e4e6eb;
+  --card: #23252b;
+  --accent: #2d88ff;
+  --shadow: rgba(0, 0, 0, 0.3);
 }
 
 /* === General Layout === */
@@ -86,16 +85,17 @@ button:hover {
 }
 
 /* === Calendar Grid === */
+/* === Calendar Grid === */
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 16px;
+  gap: 20px;
   max-width: 1100px;
   margin: 50px auto;
   padding: 0;
-  background: transparent; /* remove any background */
-  box-shadow: none; /* remove shadows */
-  border: none; /* remove outside box */
+  background: transparent; /* removes the big outer box */
+  box-shadow: none; /* removes the shadow around it */
+  border: none; /* removes the border outline */
 }
 
 .calendar div,
