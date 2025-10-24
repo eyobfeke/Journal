@@ -1,17 +1,17 @@
 /* === Theme Variables (Global) === */
 :root {
-  --bg: #f5f7fa;
-  --text: #1c1c1c;
-  --card: #ffffff;
-  --accent: #4a90e2;
+ --bg: #0f1115;
+--card: #1a1c20;
+--text: #eaeaea;
+--accent: #5b8def;
   --shadow: rgba(0, 0, 0, 0.05);
 }
 
 .dark {
-  --bg: #1e1f22;
-  --text: #e4e6eb;
-  --card: #2b2d31;
-  --accent: #2d88ff;
+  --bg: #0f1115;
+--card: #1a1c20;
+--text: #eaeaea;
+--accent: #5b8def;
   --shadow: rgba(0, 0, 0, 0.3);
 }
 
