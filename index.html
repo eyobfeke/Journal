@@ -5,90 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Trade Journal</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
 </head>
 <body>
   <header>
-    <h1>📊 Trade Journal</h1>
+    <h1>📒 Trade Journal</h1>
     <div class="month-nav">
-      <button id="prevMonth">◀</button>
-      <h2 id="currentMonth"></h2>
-      <button id="nextMonth">▶</button>
-      <button id="themeToggle" class="theme-btn">🌙</button>
+      <button id="prev-month">◀</button>
+      <h2 id="month-title">October 2025</h2>
+      <button id="next-month">▶</button>
     </div>
+    <button id="theme-toggle" class="theme-btn">🌙</button>
   </header>
 
- <main>
-  <section class="month-header">
-    <button id="prev-month">◀</button>
-    <h2 id="month-title"></h2>
-    <button id="next-month">▶</button>
-  </section>
+  <main>
+    <section class="calendar"></section>
+  </main>
 
-  <section class="calendar"></section>
-</main>
-
-<footer>
-  <p>Made with ❤️ using GitHub Pages</p>
-</footer>
-
-  <script>
-    // === Calendar ===
-    const calendar = document.getElementById('calendar');
-    const currentMonthEl = document.getElementById('currentMonth');
-    const prevMonthBtn = document.getElementById('prevMonth');
-    const nextMonthBtn = document.getElementById('nextMonth');
-    const themeToggle = document.getElementById('themeToggle');
-
-    let date = new Date();
-
-    function renderCalendar() {
-      calendar.innerHTML = '';
-      const year = date.getFullYear();
-      const month = date.getMonth();
-      const monthName = date.toLocaleString('default', { month: 'long' });
-      currentMonthEl.textContent = `${monthName} ${year}`;
-
-      for (let i = 1; i <= daysInMonth; i++) {
-  const dayDiv = document.createElement('div');
-  dayDiv.textContent = i;
-
-  // ✅ Add click event to open daily.html with date
-  const dateParam = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-  dayDiv.addEventListener('click', () => {
-    window.location.href = `daily.html?date=${dateParam}`;
-  });
-
-  calendar.appendChild(dayDiv);
-}
-
-    prevMonthBtn.addEventListener('click', () => {
-      date.setMonth(date.getMonth() - 1);
-      renderCalendar();
-    });
-
-    nextMonthBtn.addEventListener('click', () => {
-      date.setMonth(date.getMonth() + 1);
-      renderCalendar();
-    });
-
-    // === Theme Toggle (with Permanent Save) ===
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      document.body.classList.add('dark');
-      themeToggle.textContent = '☀️';
-    } else {
-      themeToggle.textContent = '🌙';
-    }
-
-    themeToggle.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      const isDark = document.body.classList.contains('dark');
-      themeToggle.textContent = isDark ? '☀️' : '🌙';
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    });
-
-    renderCalendar();
-  </script>
+  <footer>
+    <p>Made with ❤️ using GitHub Pages</p>
+  </footer>
 </body>
 </html>
-
