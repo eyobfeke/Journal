@@ -1,222 +1,118 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trade Journal</title>
-  <style>
-    :root {
-      --bg: #f5f6fa;
-      --card: #ffffff;
-      --text: #1a1a1a;
-      --accent: #007bff;
-      --border: #ddd;
-      --shadow: rgba(0, 0, 0, 0.1);
-    }
+<style>
+:root {
+  --bg: #f4f4f4;
+  --text: #1e1e1e;
+  --card: #ffffff;
+  --shadow: rgba(0,0,0,0.1);
+}
 
-    body.dark {
-      --bg: #1e1f22;
-      --card: #2b2d31;
-      --text: #e4e6eb;
-      --accent: #2d88ff;
-      --border: #444;
-      --shadow: rgba(0, 0, 0, 0.3);
-    }
+[data-theme="dark"] {
+  --bg: #1e1e1e;
+  --text: #f4f4f4;
+  --card: #2b2b2b;
+  --shadow: rgba(255,255,255,0.05);
+}
 
-    body {
-      font-family: "Inter", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
-      transition: background 0.3s, color 0.3s;
-    }
+body {
+  font-family: "Inter", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s ease;
+}
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--card);
-      box-shadow: 0 2px 6px var(--shadow);
-      padding: 1rem 2rem;
-    }
+/* Header */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--card);
+  box-shadow: 0 2px 6px var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
 
-    h1 {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1.2rem;
-    }
+header h1 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 
-    .month-nav {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-    }
+/* Calendar wrapper */
+main {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
 
-    .month-nav h2 {
-      margin: 0;
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
+/* Month header centered */
+.month-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
 
-    button {
-      border: none;
-      background: var(--accent);
-      color: white;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+.month-header button {
+  background: var(--card);
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text);
+  box-shadow: 0 2px 4px var(--shadow);
+  transition: all 0.2s ease;
+}
 
-    button:hover {
-      opacity: 0.85;
-    }
+.month-header button:hover {
+  transform: scale(1.05);
+}
 
-    .theme-btn {
-      background: none;
-      color: var(--text);
-      font-size: 1.2rem;
-      padding: 0.3rem;
-    }
+/* Calendar grid */
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(130px, 1fr));
+  gap: 1rem;
+}
 
-    .theme-btn:hover {
-      color: var(--accent);
-      background: none;
-    }
+.day {
+  background: var(--card);
+  box-shadow: 0 2px 5px var(--shadow);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: right;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
 
-    main {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 1rem;
-    }
+.day:hover {
+  transform: scale(1.02);
+  box-shadow: 0 3px 10px var(--shadow);
+}
 
-    .calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 0.8rem;
-      background: var(--card);
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 4px 8px var(--shadow);
-    }
+/* Theme toggle */
+.theme-toggle {
+  background: var(--card);
+  border: none;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px var(--shadow);
+  transition: all 0.3s ease;
+}
 
-    .day {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      height: 120px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.2rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .day:hover {
-      background: var(--accent);
-      color: white;
-      transform: scale(1.03);
-    }
-
-    footer {
-      text-align: center;
-      padding: 1rem;
-      color: #888;
-      font-size: 0.9rem;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>📒 Trade Journal</h1>
-    <div class="month-nav">
-      <button onclick="prevMonth()">◀</button>
-      <h2 id="monthYear"></h2>
-      <button onclick="nextMonth()">▶</button>
-      <button class="theme-btn" onclick="toggleTheme()">🌙</button>
-    </div>
-  </header>
-
-  <main>
-    <div id="calendar" class="calendar"></div>
-  </main>
-
-  <footer>
-    Made with ❤️ using GitHub Pages
-  </footer>
-
-  <script>
-    const calendar = document.getElementById("calendar");
-    const monthYear = document.getElementById("monthYear");
-    let today = new Date();
-    let currentMonth = today.getMonth();
-    let currentYear = today.getFullYear();
-
-    function renderCalendar(month, year) {
-      calendar.innerHTML = "";
-      const firstDay = new Date(year, month).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const monthName = new Date(year, month).toLocaleString("default", { month: "long" });
-      monthYear.textContent = `${monthName} ${year}`;
-
-      for (let i = 0; i < firstDay; i++) {
-        const empty = document.createElement("div");
-        calendar.appendChild(empty);
-      }
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const cell = document.createElement("div");
-        cell.classList.add("day");
-        cell.textContent = day;
-        cell.onclick = () => {
-          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-          window.location.href = `daily.html?date=${dateStr}`;
-        };
-        calendar.appendChild(cell);
-      }
-    }
-
-    function prevMonth() {
-      currentMonth--;
-      if (currentMonth < 0) {
-        currentMonth = 11;
-        currentYear--;
-      }
-      renderCalendar(currentMonth, currentYear);
-    }
-
-    function nextMonth() {
-      currentMonth++;
-      if (currentMonth > 11) {
-        currentMonth = 0;
-        currentYear++;
-      }
-      renderCalendar(currentMonth, currentYear);
-    }
-
-    function toggleTheme() {
-      document.body.classList.toggle("dark");
-      const theme = document.body.classList.contains("dark") ? "dark" : "light";
-      localStorage.setItem("theme", theme);
-      updateThemeIcon(theme);
-    }
-
-    function updateThemeIcon(theme) {
-      const btn = document.querySelector(".theme-btn");
-      btn.textContent = theme === "dark" ? "☀️" : "🌙";
-    }
-
-    window.onload = () => {
-      const savedTheme = localStorage.getItem("theme");
-      if (savedTheme === "dark") {
-        document.body.classList.add("dark");
-      }
-      updateThemeIcon(savedTheme || "light");
-      renderCalendar(currentMonth, currentYear);
-    };
-  </script>
-</body>
-</html>
+.theme-toggle:hover {
+  transform: scale(1.05);
+}
+</style>
