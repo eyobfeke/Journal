@@ -43,21 +43,32 @@ renderCalendar();
 // === Theme Toggle ===
 const themeToggle = document.getElementById("theme-toggle");
 
+// Apply theme function
 function applyTheme(theme) {
   if (theme === "dark") {
+    document.documentElement.classList.add("dark");
     document.body.classList.add("dark");
     themeToggle.textContent = "🌞";
   } else {
+    document.documentElement.classList.remove("dark");
     document.body.classList.remove("dark");
     themeToggle.textContent = "🌙";
   }
 }
 
+// Load saved theme BEFORE any rendering delay
 const savedTheme = localStorage.getItem("theme") || "light";
 applyTheme(savedTheme);
 
+// Listen for toggle click
 themeToggle.onclick = () => {
   const newTheme = document.body.classList.contains("dark") ? "light" : "dark";
   applyTheme(newTheme);
   localStorage.setItem("theme", newTheme);
 };
+
+// === Ensure Theme Persists Across Pages ===
+window.addEventListener("DOMContentLoaded", () => {
+  const savedTheme = localStorage.getItem("theme") || "light";
+  applyTheme(savedTheme);
+});
