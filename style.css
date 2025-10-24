@@ -10,11 +10,11 @@
 
 body.dark {
   /* Blue-black Notion-like Dark Mode */
-  --bg: #0e1116; /* deep blue-black background */
+  --bg: #0e1116; /* deep blue-black */
   --text: #e4e6eb; /* soft white text */
-  --card: #1b1f26; /* slightly lighter card color */
+  --card: #1b1f26; /* slightly lighter than bg */
   --accent: #3b82f6; /* Notion-style blue accent */
-  --shadow: rgba(0, 0, 0, 0.3);
+  --shadow: rgba(0, 0, 0, 0.4);
 }
 
 /* === General Layout === */
@@ -30,15 +30,18 @@ body {
 /* === Header === */
 header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   background: var(--card);
   box-shadow: 0 2px 8px var(--shadow);
   padding: 1rem 2rem;
   border-radius: 0 0 12px 12px;
+  gap: 1rem;
 }
 
 h1 {
+  position: absolute;
+  left: 2rem;
   font-size: 1.1rem;
   display: flex;
   align-items: center;
@@ -49,9 +52,8 @@ h1 {
 .month-nav {
   display: flex;
   align-items: center;
-  gap: 1rem;
   justify-content: center;
-  flex-grow: 1;
+  gap: 1rem;
 }
 
 .month-nav h2 {
@@ -87,20 +89,21 @@ button:hover {
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 12px;
-  max-width: 900px;
-  margin: 40px auto;
+  gap: 16px;
+  max-width: 1100px;
+  margin: 50px auto;
   padding: 0;
-  background: none;
-  border: none; /* removed outer grid */
-  box-shadow: none; /* removed shadow border */
+  background: transparent; /* remove any background */
+  box-shadow: none; /* remove shadows */
+  border: none; /* remove outside box */
 }
 
+.calendar div,
 .day {
   aspect-ratio: 1 / 1;
-  background: var(--card); /* smoother contrast */
-  border: none; /* removed borders between cells */
-  border-radius: 12px;
+  background: var(--card);
+  border: none; /* remove inner grid borders */
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -108,9 +111,10 @@ button:hover {
   font-weight: 600;
   color: var(--text);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
+.calendar div:hover,
 .day:hover {
   transform: scale(1.05);
   background: var(--accent);
