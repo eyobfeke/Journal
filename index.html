@@ -42,13 +42,18 @@
       const monthName = date.toLocaleString('default', { month: 'long' });
       currentMonthEl.textContent = `${monthName} ${year}`;
 
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
       for (let i = 1; i <= daysInMonth; i++) {
-        const dayDiv = document.createElement('div');
-        dayDiv.textContent = i;
-        calendar.appendChild(dayDiv);
-      }
-    }
+  const dayDiv = document.createElement('div');
+  dayDiv.textContent = i;
+
+  // ✅ Add click event to open daily.html with date
+  const dateParam = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+  dayDiv.addEventListener('click', () => {
+    window.location.href = `daily.html?date=${dateParam}`;
+  });
+
+  calendar.appendChild(dayDiv);
+}
 
     prevMonthBtn.addEventListener('click', () => {
       date.setMonth(date.getMonth() - 1);
