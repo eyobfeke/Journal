@@ -1,21 +1,4 @@
-/* === Theme Variables (Global) === */
-:root {
- --bg: #0f1115;
---card: #1a1c20;
---text: #eaeaea;
---accent: #5b8def;
-  --shadow: rgba(0, 0, 0, 0.05);
-}
-
-.dark {
-  --bg: #0f1115;
---card: #1a1c20;
---text: #eaeaea;
---accent: #5b8def;
-  --shadow: rgba(0, 0, 0, 0.3);
-}
-
-/* === General Layout === */
+/* === Base Layout === */
 body {
   font-family: 'Inter', sans-serif;
   margin: 0;
@@ -25,40 +8,51 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
+/* === Theme Variables === */
+:root {
+  --bg: #f5f6f8;
+  --text: #1c1c1c;
+  --card: #ffffff;
+  --accent: #4a90e2;
+  --shadow: rgba(0, 0, 0, 0.05);
+}
+
+body.dark {
+  --bg: #1e1f22;
+  --text: #e4e6eb;
+  --card: #2b2d31;
+  --accent: #2d88ff;
+  --shadow: rgba(0, 0, 0, 0.3);
+}
+
 /* === Header === */
 header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   background: var(--card);
-  box-shadow: 0 2px 6px var(--shadow);
   padding: 1rem 2rem;
-  position: relative;
+  box-shadow: 0 2px 6px var(--shadow);
 }
 
-/* === Title === */
 h1 {
-  position: absolute;
-  left: 2rem;
   font-size: 1.2rem;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-/* === Month Navigation === */
 .month-nav {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 1rem;
+  justify-content: center;
 }
 
 .month-nav h2 {
   font-size: 1.5rem;
-  font-weight: 700;
   margin: 0;
-  color: var(--text);
+  text-align: center;
 }
 
 button {
@@ -68,45 +62,43 @@ button {
   padding: 6px 10px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: opacity 0.2s, transform 0.2s;
+  font-size: 1rem;
+  transition: opacity 0.2s;
 }
 
 button:hover {
   opacity: 0.85;
-  transform: scale(1.05);
 }
 
 .theme-btn {
   background: transparent;
   color: var(--text);
   font-size: 1.3rem;
-  border: none;
 }
 
-/* === Calendar === */
+/* === Calendar (Notion-style wide grid) === */
 .calendar {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1.5rem;
   padding: 2rem;
   background: var(--card);
   border-radius: 16px;
   box-shadow: 0 4px 16px var(--shadow);
-  max-width: 1200px;
-  margin: 2rem auto;
+  max-width: 1400px;
+  margin: 3rem auto;
 }
 
 .calendar div {
   background: var(--bg);
-  border-radius: 12px;
-  padding: 1.5rem 0;
+  border-radius: 14px;
+  padding: 2rem 0;
   text-align: center;
-  font-size: 1.1rem;
-  font-weight: 500;
+  font-size: 1.2rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
   border: 1px solid var(--shadow);
+  transition: all 0.25s ease;
 }
 
 .calendar div:hover {
@@ -114,29 +106,12 @@ button:hover {
   background: var(--accent);
   color: white;
 }
+
 /* === Footer === */
 footer {
   text-align: center;
-  margin: 2rem 0;
-  font-size: 0.85rem;
+  padding: 1rem;
+  font-size: 0.9rem;
   color: var(--text);
-  opacity: 0.8;
+  opacity: 0.7;
 }
-
-/* === Responsive === */
-@media (max-width: 768px) {
-  header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.8rem;
-  }
-
-  .calendar {
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  }
-
-  .month-nav h2 {
-    font-size: 1.3rem;
-  }
-}
-
