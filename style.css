@@ -121,3 +121,17 @@ button:hover {
     align-items: flex-start;
     gap: 0.8rem;
   }
+/* Center month name and make it bigger */
+.month-header {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* centers it */
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.month-header span {
+  font-size: 1.6rem; /* make month text larger */
+  font-weight: 700;
+  color: var(--text);
+}
