@@ -1,118 +1,101 @@
-<style>
-:root {
-  --bg: #f4f4f4;
-  --text: #1e1e1e;
-  --card: #ffffff;
-  --shadow: rgba(0,0,0,0.1);
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trade Journal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>📊 Trade Journal</h1>
+    <div class="month-nav">
+      <button id="prevMonth">◀</button>
+      <h2 id="monthYear">October 2025</h2>
+      <button id="nextMonth">▶</button>
+      <button id="themeToggle" class="theme-btn">🌙</button>
+    </div>
+  </header>
 
-[data-theme="dark"] {
-  --bg: #1e1e1e;
-  --text: #f4f4f4;
-  --card: #2b2b2b;
-  --shadow: rgba(255,255,255,0.05);
-}
+  <main>
+    <div class="calendar" id="calendar"></div>
+  </main>
 
-body {
-  font-family: "Inter", sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  margin: 0;
-  padding: 0;
-  transition: all 0.3s ease;
-}
+  <footer>
+    <p>Made with ❤️ using GitHub Pages</p>
+  </footer>
 
-/* Header */
-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: var(--card);
-  box-shadow: 0 2px 6px var(--shadow);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
+  <script>
+    // === Calendar Setup ===
+    const calendar = document.getElementById('calendar');
+    const monthYear = document.getElementById('monthYear');
+    const themeToggle = document.getElementById('themeToggle');
+    const now = new Date();
 
-header h1 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
+    let currentMonth = now.getMonth();
+    let currentYear = now.getFullYear();
 
-/* Calendar wrapper */
-main {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 2rem;
-}
+    function renderCalendar() {
+      calendar.innerHTML = '';
+      const firstDay = new Date(currentYear, currentMonth, 1);
+      const lastDay = new Date(currentYear, currentMonth + 1, 0);
+      const monthName = firstDay.toLocaleString('default', { month: 'long' });
 
-/* Month header centered */
-.month-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-}
+      monthYear.textContent = `${monthName} ${currentYear}`;
 
-.month-header button {
-  background: var(--card);
-  border: none;
-  padding: 0.5rem 0.8rem;
-  border-radius: 8px;
-  cursor: pointer;
-  color: var(--text);
-  box-shadow: 0 2px 4px var(--shadow);
-  transition: all 0.2s ease;
-}
+      // Fill blanks before 1st day
+      for (let i = 0; i < firstDay.getDay(); i++) {
+        const empty = document.createElement('div');
+        calendar.appendChild(empty);
+      }
 
-.month-header button:hover {
-  transform: scale(1.05);
-}
+      // Fill days
+      for (let d = 1; d <= lastDay.getDate(); d++) {
+        const dayCell = document.createElement('div');
+        dayCell.textContent = d;
+        dayCell.addEventListener('click', () => {
+          const date = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+          window.location.href = `daily.html?date=${date}`;
+        });
+        calendar.appendChild(dayCell);
+      }
+    }
 
-/* Calendar grid */
-.calendar {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(130px, 1fr));
-  gap: 1rem;
-}
+    // === Month Navigation ===
+    document.getElementById('prevMonth').addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar();
+    });
 
-.day {
-  background: var(--card);
-  box-shadow: 0 2px 5px var(--shadow);
-  border-radius: 10px;
-  padding: 1rem;
-  text-align: right;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
+    document.getElementById('nextMonth').addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar();
+    });
 
-.day:hover {
-  transform: scale(1.02);
-  box-shadow: 0 3px 10px var(--shadow);
-}
+    // === Theme Toggle ===
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      themeToggle.textContent = isDark ? '☀️' : '🌙';
+    });
 
-/* Theme toggle */
-.theme-toggle {
-  background: var(--card);
-  border: none;
-  padding: 0.4rem 0.6rem;
-  border-radius: 6px;
-  cursor: pointer;
-  box-shadow: 0 2px 4px var(--shadow);
-  transition: all 0.3s ease;
-}
+    // === Keep Theme After Reload ===
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark');
+      themeToggle.textContent = '☀️';
+    }
 
-.theme-toggle:hover {
-  transform: scale(1.05);
-}
-</style>
+    // === Render Calendar Initially ===
+    renderCalendar();
+  </script>
+</body>
+</html>
