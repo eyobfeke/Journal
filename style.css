@@ -82,16 +82,19 @@ button:hover {
 }
 
 /* === Calendar Grid === */
-.calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 1rem;
-  padding: 2rem;
-  background: var(--card);
-  border-radius: 16px;
-  box-shadow: 0 4px 16px var(--shadow);
-  max-width: 1200px;
-  margin: 2rem auto;
+.day {
+  aspect-ratio: 1 / 1;
+  background: var(--bg);
+  border: 1px solid var(--shadow);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem; /* Increased from 1.2rem */
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .calendar div {
