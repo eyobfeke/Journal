@@ -40,10 +40,9 @@ nextMonthBtn.onclick = () => {
 
 renderCalendar();
 
-// === Theme Toggle ===
+// === Theme Toggle (Permanent Dark Mode) ===
 const themeToggle = document.getElementById("theme-toggle");
 
-// Apply theme function
 function applyTheme(theme) {
   if (theme === "dark") {
     document.documentElement.classList.add("dark");
@@ -56,19 +55,17 @@ function applyTheme(theme) {
   }
 }
 
-// Load saved theme BEFORE any rendering delay
-const savedTheme = localStorage.getItem("theme") || "light";
+// Always default to dark and save it
+let savedTheme = localStorage.getItem("theme");
+if (!savedTheme) {
+  savedTheme = "dark";
+  localStorage.setItem("theme", "dark");
+}
+
+// Apply immediately before any rendering
 applyTheme(savedTheme);
 
-// Listen for toggle click
+// Disable switching (keep dark permanent)
 themeToggle.onclick = () => {
-  const newTheme = document.body.classList.contains("dark") ? "light" : "dark";
-  applyTheme(newTheme);
-  localStorage.setItem("theme", newTheme);
+  alert("Dark mode is always enabled 🌙");
 };
-
-// === Ensure Theme Persists Across Pages ===
-window.addEventListener("DOMContentLoaded", () => {
-  const savedTheme = localStorage.getItem("theme") || "light";
-  applyTheme(savedTheme);
-});
