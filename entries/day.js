@@ -1,3 +1,21 @@
+// ===== PERMANENT DARK MODE (SYNCED + STORED) =====
+const themeBtn = document.getElementById("themeToggle");
+
+// Ensure dark mode is stored
+localStorage.setItem("theme", "dark");
+
+// Apply dark mode immediately
+document.documentElement.classList.add("dark");
+document.body.classList.add("dark");
+
+// Optional toggle behavior (you can remove this block if you want no toggle)
+if (themeBtn) {
+  themeBtn.textContent = "🌞";
+  themeBtn.onclick = () => {
+    alert("Dark mode is permanent 🌙");
+  };
+}
+
 // === Get Date Parameter ===
 const params = new URLSearchParams(window.location.search);
 const date = params.get("date");
