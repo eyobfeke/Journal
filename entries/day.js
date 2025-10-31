@@ -287,3 +287,48 @@ document.addEventListener("keydown", (ev) => {
     modalImg.src = "";
   }
 });
+// === Screenshot Upload + Inline Preview + Permanent Save ===
+const screenshotCells = document.querySelectorAll('.image-upload');
+screenshotCells.forEach(label => {
+  const input = label.querySelector('input[type="file"]');
+
+  input.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const imgUrl = ev.target.result;
+
+      // remove the upload placeholder
+      let placeholder = label.querySelector('.upload-placeholder');
+      if (placeholder) placeholder.remove();
+
+      // create preview image
+      const img = document.createElement('img');
+      img.src = imgUrl;
+      img.className = 'screenshot-preview';
+      img.style.width = '100%';
+      img.style.height = 'auto';
+      img.style.borderRadius = '8px';
+      img.style.cursor = 'pointer';
+      img.style.objectFit = 'cover';
+      label.appendChild(img);
+
+      // clicking image opens modal (reuse the existing one)
+      img.addEventListener('click', () => {
+        modalImg.src = imgUrl;
+        imageModal.style.display = 'flex';
+      });
+
+      // save to localStorage (for that trade)
+      const all = getTrades();
+      const lastTrade = all[all.length - 1];
+      if (lastTrade) {
+        lastTrade.screenshot = imgUrl;
+        saveTrades(all);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+});
