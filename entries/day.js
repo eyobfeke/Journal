@@ -11,19 +11,20 @@ const tradeList = document.getElementById("tradeList");
 const backBtn = document.getElementById("backBtn");
 const themeBtn = document.getElementById("themeToggle");
 
-// form fields (ids expected: symbol, side, qty, entry, exit, notes, pnl optional, screenshot optional)
+// form fields
 const symbolEl = document.getElementById("symbol");
 const sideEl = document.getElementById("side");
 const qtyEl = document.getElementById("qty");
 const entryEl = document.getElementById("entry");
 const exitEl = document.getElementById("exit");
 const notesEl = document.getElementById("notes");
-const pnlEl = document.getElementById("pnl"); // optional if your markup has a pnl input
-// file input: prefer id="screenshot", else fallback to first file input inside the form
+const pnlEl = document.getElementById("pnl");
+
+// file input
 let screenshotInput = document.getElementById("screenshot");
 if (!screenshotInput && form) screenshotInput = form.querySelector('input[type="file"]');
 
-// small helper: create modal for viewing big screenshot
+// --- Image Modal ---
 function createImageModal() {
   const modal = document.createElement("div");
   modal.id = "screenshotModal";
@@ -57,19 +58,20 @@ function createImageModal() {
 }
 const { modal: imageModal, img: modalImg } = createImageModal();
 
-// set page title
+// --- Page Title ---
 if (dateTitle) dateTitle.textContent = `Trades for ${date || "Unknown date"}`;
 
-// ------------------- THEME (KEEP DARK PERMANENT) -------------------
-// ensure dark is applied early; if index sets localStorage('theme') we respect it; otherwise default dark
+// --- Permanent Dark Mode ---
 const storedTheme = localStorage.getItem("theme") || "dark";
-localStorage.setItem("theme", storedTheme === "dark" ? "dark" : "dark"); // force dark as requested
+localStorage.setItem("theme", "dark");
 document.documentElement.classList.add("dark");
 document.body.classList.add("dark");
-if (themeBtn) themeBtn.textContent = "🌞";
-if (themeBtn) themeBtn.onclick = () => alert("Dark mode is permanently enabled.");
+if (themeBtn) {
+  themeBtn.textContent = "🌞";
+  themeBtn.onclick = () => alert("Dark mode is permanently enabled.");
+}
 
-// ------------------- TRADES STORAGE -------------------
+// --- Storage ---
 function getTrades() {
   return JSON.parse(localStorage.getItem("trades") || "[]");
 }
@@ -77,24 +79,22 @@ function saveTrades(trades) {
   localStorage.setItem("trades", JSON.stringify(trades));
 }
 
-// ------------------- PnL Calculation -------------------
+// --- PnL Calculation ---
 function computePnlValue(side, entryVal, exitVal, qtyVal) {
   const q = Number(qtyVal) || 0;
   const e = Number(entryVal) || 0;
   const x = Number(exitVal) || 0;
-
   let pnl = 0;
   const s = (side || "").toString().toLowerCase();
   if (s === "short" || s === "sell") {
     pnl = (e - x) * q;
   } else {
-    // default long/buy
     pnl = (x - e) * q;
   }
   return Number.isFinite(pnl) ? pnl : 0;
 }
 
-// update PnL input in real time (if a PnL input exists)
+// --- Live PnL Update ---
 function updatePnlField() {
   if (!pnlEl) return;
   const sideVal = sideEl ? sideEl.value : "LONG";
@@ -104,30 +104,27 @@ function updatePnlField() {
   const p = computePnlValue(sideVal, entryVal, exitVal, qtyVal);
   pnlEl.value = p.toFixed(2);
 }
-
-// attach listeners to compute PnL live
 if (entryEl) entryEl.addEventListener("input", updatePnlField);
 if (exitEl) exitEl.addEventListener("input", updatePnlField);
 if (qtyEl) qtyEl.addEventListener("input", updatePnlField);
 if (sideEl) sideEl.addEventListener("change", updatePnlField);
 
-// ------------------- Screenshot handling for the FORM -------------------
-let formScreenshotData = null; // base64 string for the form-uploaded screenshot
+// --- Screenshot Upload + Permanent Storage ---
+let formScreenshotData = null;
 
 if (screenshotInput) {
   screenshotInput.addEventListener("change", (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) {
       formScreenshotData = null;
-      // remove preview if you show one in the form (not required)
       return;
     }
     const reader = new FileReader();
     reader.onload = (ev) => {
-      formScreenshotData = ev.target.result; // base64 data URL
-      // optionally show a small preview next to the file input if you want:
+      formScreenshotData = ev.target.result;
       const existing = form.querySelector(".screenshot-preview");
       if (existing) existing.remove();
+
       const thumb = document.createElement("img");
       thumb.className = "screenshot-preview";
       thumb.src = formScreenshotData;
@@ -136,13 +133,21 @@ if (screenshotInput) {
       thumb.style.objectFit = "cover";
       thumb.style.borderRadius = "6px";
       thumb.style.marginLeft = "8px";
+      thumb.style.cursor = "pointer";
+
+      // Click to enlarge
+      thumb.addEventListener("click", () => {
+        modalImg.src = formScreenshotData;
+        imageModal.style.display = "flex";
+      });
+
       screenshotInput.insertAdjacentElement("afterend", thumb);
     };
     reader.readAsDataURL(file);
   });
 }
 
-// ------------------- RENDER SAVED TRADES -------------------
+// --- Render Saved Trades ---
 function renderTrades() {
   const trades = getTrades().filter((t) => t.date === date);
   tradeList.innerHTML = "";
@@ -153,7 +158,6 @@ function renderTrades() {
   }
 
   trades.forEach((t) => {
-    // compute pnl if not present (backwards compatibility)
     let pnlValue = t.pnl;
     if (pnlValue === undefined || pnlValue === null || pnlValue === "") {
       pnlValue = computePnlValue(t.side, t.entry, t.exit, t.qty).toFixed(2);
@@ -161,9 +165,9 @@ function renderTrades() {
 
     const card = document.createElement("div");
     card.className = "trade-card";
-    card.style.cssText = "border-radius:8px;padding:10px;margin-bottom:10px;background:var(--card);color:var(--text);box-shadow:0 1px 4px var(--shadow);";
+    card.style.cssText =
+      "border-radius:8px;padding:10px;margin-bottom:10px;background:var(--card);color:var(--text);box-shadow:0 1px 4px var(--shadow);";
 
-    // main info
     const info = document.createElement("div");
     info.innerHTML = `
       <div style="display:flex; justify-content:space-between; gap:12px; align-items:center;">
@@ -177,9 +181,10 @@ function renderTrades() {
     `;
     card.appendChild(info);
 
-    // screenshot thumbnail + view button
+    // Screenshot Display
     const row = document.createElement("div");
     row.style.marginTop = "8px; display:flex; gap:10px; align-items:center;";
+
     if (t.screenshot) {
       const thumb = document.createElement("img");
       thumb.src = t.screenshot;
@@ -189,24 +194,14 @@ function renderTrades() {
       thumb.style.objectFit = "cover";
       thumb.style.borderRadius = "6px";
       thumb.style.cursor = "pointer";
-      thumb.style.marginRight = "10px";
       thumb.addEventListener("click", () => {
         modalImg.src = t.screenshot;
         imageModal.style.display = "flex";
       });
       row.appendChild(thumb);
-
-      const viewBtn = document.createElement("button");
-      viewBtn.textContent = "View";
-      viewBtn.style.marginRight = "8px";
-      viewBtn.addEventListener("click", () => {
-        modalImg.src = t.screenshot;
-        imageModal.style.display = "flex";
-      });
-      row.appendChild(viewBtn);
     }
 
-    // delete button
+    // Delete Button
     const del = document.createElement("button");
     del.textContent = "🗑 Delete";
     del.style.marginLeft = "10px";
@@ -223,7 +218,7 @@ function renderTrades() {
   });
 }
 
-// small HTML-escape helper for notes
+// Escape HTML helper
 function escapeHtml(str) {
   if (!str) return "";
   return String(str)
@@ -233,26 +228,21 @@ function escapeHtml(str) {
     .replaceAll('"', "&quot;");
 }
 
-// initial render
+// Initial render
 renderTrades();
 
-// ------------------- FORM SUBMIT (ADD TRADE) -------------------
+// --- Form Submit ---
 if (form) {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    // read values
     const symbol = symbolEl ? symbolEl.value.trim() : "";
     const side = sideEl ? sideEl.value : "LONG";
     const qty = Number(qtyEl ? qtyEl.value : 0);
     const entry = parseFloat(entryEl ? entryEl.value : 0) || 0;
     const exit = parseFloat(exitEl ? exitEl.value : 0) || 0;
     const notes = notesEl ? notesEl.value : "";
-
-    // compute pnl (store as string to be safe)
     const pnl = computePnlValue(side, entry, exit, qty).toFixed(2);
-
-    // screenshot: use base64 read earlier or if file selected and not read (rare), read synchronously
     const screenshotData = formScreenshotData || null;
 
     const newTrade = {
@@ -272,10 +262,8 @@ if (form) {
     all.push(newTrade);
     saveTrades(all);
 
-    // reset form fields
     form.reset();
     formScreenshotData = null;
-    // remove preview if any
     const prev = form.querySelector(".screenshot-preview");
     if (prev) prev.remove();
 
@@ -283,48 +271,18 @@ if (form) {
   });
 }
 
-// ------------------- convenient "Add Trade" quick-row support (if you have a dynamic table) -------------------
-// If your HTML uses a table with an "Add Trade" button that appends rows (earlier versions),
-// this code does not override that behavior. The form submission above is used for adding trades.
-
-// ------------------- small accessibility/failsafe: back button -------------------
+// --- Back Button ---
 if (backBtn) {
   backBtn.addEventListener("click", () => {
     window.location.href = "index.html";
   });
 }
 
-// ------------------- Make sure modal closes on escape key -------------------
+// --- Escape key closes modal ---
 document.addEventListener("keydown", (ev) => {
-  if (ev.key === "Escape") {
-    if (imageModal.style.display === "flex") {
-      imageModal.style.display = "none";
-      modalImg.src = "";
-  )); 
-}
-// === Screenshot Upload Preview & Enlarge ===
-document.querySelectorAll(".screenshot-input").forEach((input) => {
-  input.addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    const label = input.closest(".image-upload");
-    const preview = label.querySelector(".screenshot-preview");
-    const placeholder = label.querySelector(".upload-placeholder");
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        preview.src = e.target.result;
-        preview.style.display = "block";
-        placeholder.style.display = "none";
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-});
-
-// Enlarge image on click
-document.addEventListener("click", (e) => {
-  if (e.target.classList.contains("screenshot-preview")) {
-    e.target.classList.toggle("enlarged");
+  if (ev.key === "Escape" && imageModal.style.display === "flex") {
+    imageModal.style.display = "none";
+    modalImg.src = "";
   }
 });
+
