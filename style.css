@@ -166,3 +166,43 @@ footer {
   box-shadow: 0 0 20px rgba(0,0,0,0.8);
   background: rgba(0,0,0,0.9);
 }
+.screenshot-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.upload-label {
+  color: #007bff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+.upload-label:hover {
+  text-decoration: underline;
+}
+
+.screenshot-preview {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.remove-screenshot {
+  border: none;
+  background: none;
+  color: red;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.remove-screenshot:hover {
+  text-decoration: underline;
+}
