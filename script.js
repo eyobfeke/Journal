@@ -69,3 +69,63 @@ applyTheme(savedTheme);
 themeToggle.onclick = () => {
   alert("Dark mode is always enabled 🌙");
 };
+document.querySelectorAll('.screenshot-input').forEach(input => {
+  input.addEventListener('change', function() {
+    const container = this.closest('.screenshot-container');
+    const preview = container.querySelector('.screenshot-preview');
+    const removeBtn = container.querySelector('.remove-screenshot');
+    const file = this.files[0];
+    
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        removeBtn.style.display = 'inline';
+        container.querySelector('.upload-label').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+});
+
+document.querySelectorAll('.remove-screenshot').forEach(button => {
+  button.addEventListener('click', function() {
+    const container = this.closest('.screenshot-container');
+    const preview = container.querySelector('.screenshot-preview');
+    const input = container.querySelector('.screenshot-input');
+    const label = container.querySelector('.upload-label');
+    
+    input.value = '';
+    preview.src = '';
+    preview.style.display = 'none';
+    this.style.display = 'none';
+    label.style.display = 'inline-flex';
+  });
+});
+
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('screenshot-preview')) {
+    const img = e.target;
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    `;
+    const enlarged = document.createElement('img');
+    enlarged.src = img.src;
+    enlarged.style.cssText = `
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+    `;
+    overlay.appendChild(enlarged);
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', () => overlay.remove());
+  }
+});
