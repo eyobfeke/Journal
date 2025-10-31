@@ -222,7 +222,13 @@
   <td><input type="text" class="rr" placeholder="1:3"></td>
   <td><textarea placeholder="Setup notes..."></textarea></td>
   <td><input type="number" class="pnl" placeholder="$0" readonly></td>
-  <td><input type="file" id="screenshot" accept="image/*"></td>
+  <td>
+  <label class="image-upload">
+    <input type="file" class="screenshot-input" accept="image/*" hidden>
+    <img src="" alt="Screenshot Preview" class="screenshot-preview" style="display:none; cursor:pointer;">
+    <span class="upload-placeholder">📷 Upload</span>
+  </label>
+</td>
   <td><button class="deleteRow">❌</button></td>
 </tr>
         </tbody>
