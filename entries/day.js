@@ -300,6 +300,31 @@ document.addEventListener("keydown", (ev) => {
     if (imageModal.style.display === "flex") {
       imageModal.style.display = "none";
       modalImg.src = "";
+  )); 
+}
+// === Screenshot Upload Preview & Enlarge ===
+document.querySelectorAll(".screenshot-input").forEach((input) => {
+  input.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    const label = input.closest(".image-upload");
+    const preview = label.querySelector(".screenshot-preview");
+    const placeholder = label.querySelector(".upload-placeholder");
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+        preview.style.display = "block";
+        placeholder.style.display = "none";
+      };
+      reader.readAsDataURL(file);
     }
+  });
+});
+
+// Enlarge image on click
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("screenshot-preview")) {
+    e.target.classList.toggle("enlarged");
   }
 });
