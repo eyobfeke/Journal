@@ -1,4 +1,4 @@
-// day.js - enhanced: auto PnL + screenshot preview + persistent storage + permanent dark
+// day.js - enhanced: auto PnL + screenshot preview + persistent storage + permanent dark + remove screenshot
 
 // --- get URL date param ---
 const params = new URLSearchParams(window.location.search);
@@ -19,12 +19,10 @@ const entryEl = document.getElementById("entry");
 const exitEl = document.getElementById("exit");
 const notesEl = document.getElementById("notes");
 const pnlEl = document.getElementById("pnl");
-
-// file input
 let screenshotInput = document.getElementById("screenshot");
 if (!screenshotInput && form) screenshotInput = form.querySelector('input[type="file"]');
 
-// --- Image Modal ---
+// ------------------- Modal for big screenshot -------------------
 function createImageModal() {
   const modal = document.createElement("div");
   modal.id = "screenshotModal";
@@ -58,10 +56,10 @@ function createImageModal() {
 }
 const { modal: imageModal, img: modalImg } = createImageModal();
 
-// --- Page Title ---
+// set page title
 if (dateTitle) dateTitle.textContent = `Trades for ${date || "Unknown date"}`;
 
-// --- Permanent Dark Mode ---
+// ------------------- THEME (KEEP DARK PERMANENT) -------------------
 const storedTheme = localStorage.getItem("theme") || "dark";
 localStorage.setItem("theme", "dark");
 document.documentElement.classList.add("dark");
@@ -71,7 +69,7 @@ if (themeBtn) {
   themeBtn.onclick = () => alert("Dark mode is permanently enabled.");
 }
 
-// --- Storage ---
+// ------------------- STORAGE -------------------
 function getTrades() {
   return JSON.parse(localStorage.getItem("trades") || "[]");
 }
@@ -79,28 +77,20 @@ function saveTrades(trades) {
   localStorage.setItem("trades", JSON.stringify(trades));
 }
 
-// --- PnL Calculation ---
+// ------------------- PnL Calculation -------------------
 function computePnlValue(side, entryVal, exitVal, qtyVal) {
   const q = Number(qtyVal) || 0;
   const e = Number(entryVal) || 0;
   const x = Number(exitVal) || 0;
-  let pnl = 0;
   const s = (side || "").toString().toLowerCase();
-  if (s === "short" || s === "sell") {
-    pnl = (e - x) * q;
-  } else {
-    pnl = (x - e) * q;
-  }
-  return Number.isFinite(pnl) ? pnl : 0;
+  return s === "short" || s === "sell" ? (e - x) * q : (x - e) * q;
 }
-
-// --- Live PnL Update ---
 function updatePnlField() {
   if (!pnlEl) return;
-  const sideVal = sideEl ? sideEl.value : "LONG";
-  const entryVal = entryEl ? entryEl.value : "";
-  const exitVal = exitEl ? exitEl.value : "";
-  const qtyVal = qtyEl ? qtyEl.value : "";
+  const sideVal = sideEl?.value || "LONG";
+  const entryVal = entryEl?.value || "";
+  const exitVal = exitEl?.value || "";
+  const qtyVal = qtyEl?.value || "";
   const p = computePnlValue(sideVal, entryVal, exitVal, qtyVal);
   pnlEl.value = p.toFixed(2);
 }
@@ -109,12 +99,12 @@ if (exitEl) exitEl.addEventListener("input", updatePnlField);
 if (qtyEl) qtyEl.addEventListener("input", updatePnlField);
 if (sideEl) sideEl.addEventListener("change", updatePnlField);
 
-// --- Screenshot Upload + Permanent Storage ---
+// ------------------- Screenshot handling -------------------
 let formScreenshotData = null;
 
 if (screenshotInput) {
   screenshotInput.addEventListener("change", (e) => {
-    const file = e.target.files && e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) {
       formScreenshotData = null;
       return;
@@ -122,8 +112,18 @@ if (screenshotInput) {
     const reader = new FileReader();
     reader.onload = (ev) => {
       formScreenshotData = ev.target.result;
-      const existing = form.querySelector(".screenshot-preview");
+
+      // remove old preview
+      const existing = form.querySelector(".screenshot-wrapper");
       if (existing) existing.remove();
+
+      // wrapper for preview + remove
+      const wrapper = document.createElement("div");
+      wrapper.className = "screenshot-wrapper";
+      wrapper.style.display = "flex";
+      wrapper.style.alignItems = "center";
+      wrapper.style.gap = "8px";
+      wrapper.style.marginTop = "6px";
 
       const thumb = document.createElement("img");
       thumb.className = "screenshot-preview";
@@ -132,41 +132,48 @@ if (screenshotInput) {
       thumb.style.height = "64px";
       thumb.style.objectFit = "cover";
       thumb.style.borderRadius = "6px";
-      thumb.style.marginLeft = "8px";
       thumb.style.cursor = "pointer";
+      thumb.title = "Click to enlarge";
 
-      // Click to enlarge
       thumb.addEventListener("click", () => {
         modalImg.src = formScreenshotData;
         imageModal.style.display = "flex";
       });
 
-      screenshotInput.insertAdjacentElement("afterend", thumb);
+      const removeBtn = document.createElement("button");
+      removeBtn.textContent = "❌ Remove";
+      removeBtn.type = "button";
+      removeBtn.style.background = "#b33";
+      removeBtn.style.color = "white";
+      removeBtn.style.border = "none";
+      removeBtn.style.padding = "4px 8px";
+      removeBtn.style.borderRadius = "4px";
+      removeBtn.style.cursor = "pointer";
+
+      removeBtn.addEventListener("click", () => {
+        wrapper.remove();
+        screenshotInput.value = "";
+        formScreenshotData = null;
+      });
+
+      wrapper.appendChild(thumb);
+      wrapper.appendChild(removeBtn);
+      screenshotInput.insertAdjacentElement("afterend", wrapper);
     };
     reader.readAsDataURL(file);
   });
 }
 
-// --- Render Saved Trades ---
+// ------------------- Render Trades -------------------
 function renderTrades() {
   const trades = getTrades().filter((t) => t.date === date);
-  tradeList.innerHTML = "";
-
-  if (trades.length === 0) {
-    tradeList.innerHTML = "<p>No trades logged for this date.</p>";
-    return;
-  }
+  tradeList.innerHTML = trades.length ? "" : "<p>No trades logged for this date.</p>";
 
   trades.forEach((t) => {
-    let pnlValue = t.pnl;
-    if (pnlValue === undefined || pnlValue === null || pnlValue === "") {
-      pnlValue = computePnlValue(t.side, t.entry, t.exit, t.qty).toFixed(2);
-    }
-
+    const pnlValue = t.pnl ?? computePnlValue(t.side, t.entry, t.exit, t.qty).toFixed(2);
     const card = document.createElement("div");
     card.className = "trade-card";
-    card.style.cssText =
-      "border-radius:8px;padding:10px;margin-bottom:10px;background:var(--card);color:var(--text);box-shadow:0 1px 4px var(--shadow);";
+    card.style.cssText = "border-radius:8px;padding:10px;margin-bottom:10px;background:var(--card);color:var(--text);box-shadow:0 1px 4px var(--shadow);";
 
     const info = document.createElement("div");
     info.innerHTML = `
@@ -181,9 +188,8 @@ function renderTrades() {
     `;
     card.appendChild(info);
 
-    // Screenshot Display
     const row = document.createElement("div");
-    row.style.marginTop = "8px; display:flex; gap:10px; align-items:center;";
+    row.style.cssText = "margin-top:8px; display:flex; gap:10px; align-items:center;";
 
     if (t.screenshot) {
       const thumb = document.createElement("img");
@@ -194,21 +200,27 @@ function renderTrades() {
       thumb.style.objectFit = "cover";
       thumb.style.borderRadius = "6px";
       thumb.style.cursor = "pointer";
+      thumb.style.marginRight = "10px";
       thumb.addEventListener("click", () => {
         modalImg.src = t.screenshot;
         imageModal.style.display = "flex";
       });
       row.appendChild(thumb);
+
+      const viewBtn = document.createElement("button");
+      viewBtn.textContent = "View";
+      viewBtn.addEventListener("click", () => {
+        modalImg.src = t.screenshot;
+        imageModal.style.display = "flex";
+      });
+      row.appendChild(viewBtn);
     }
 
-    // Delete Button
     const del = document.createElement("button");
     del.textContent = "🗑 Delete";
-    del.style.marginLeft = "10px";
     del.addEventListener("click", () => {
-      const all = getTrades();
-      const filtered = all.filter((x) => x.id !== t.id);
-      saveTrades(filtered);
+      const all = getTrades().filter((x) => x.id !== t.id);
+      saveTrades(all);
       renderTrades();
     });
     row.appendChild(del);
@@ -217,31 +229,25 @@ function renderTrades() {
     tradeList.appendChild(card);
   });
 }
-
-// Escape HTML helper
 function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
+  return String(str || "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 }
-
-// Initial render
 renderTrades();
 
-// --- Form Submit ---
+// ------------------- Add Trade -------------------
 if (form) {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-
-    const symbol = symbolEl ? symbolEl.value.trim() : "";
-    const side = sideEl ? sideEl.value : "LONG";
-    const qty = Number(qtyEl ? qtyEl.value : 0);
-    const entry = parseFloat(entryEl ? entryEl.value : 0) || 0;
-    const exit = parseFloat(exitEl ? exitEl.value : 0) || 0;
-    const notes = notesEl ? notesEl.value : "";
+    const symbol = symbolEl?.value.trim() || "";
+    const side = sideEl?.value || "LONG";
+    const qty = Number(qtyEl?.value || 0);
+    const entry = parseFloat(entryEl?.value || 0) || 0;
+    const exit = parseFloat(exitEl?.value || 0) || 0;
+    const notes = notesEl?.value || "";
     const pnl = computePnlValue(side, entry, exit, qty).toFixed(2);
     const screenshotData = formScreenshotData || null;
 
@@ -264,25 +270,20 @@ if (form) {
 
     form.reset();
     formScreenshotData = null;
-    const prev = form.querySelector(".screenshot-preview");
+    const prev = form.querySelector(".screenshot-wrapper");
     if (prev) prev.remove();
 
     renderTrades();
   });
 }
 
-// --- Back Button ---
-if (backBtn) {
-  backBtn.addEventListener("click", () => {
-    window.location.href = "index.html";
-  });
-}
+// ------------------- Back Button -------------------
+if (backBtn) backBtn.addEventListener("click", () => (window.location.href = "index.html"));
 
-// --- Escape key closes modal ---
+// ------------------- Close modal with Escape -------------------
 document.addEventListener("keydown", (ev) => {
   if (ev.key === "Escape" && imageModal.style.display === "flex") {
     imageModal.style.display = "none";
     modalImg.src = "";
   }
 });
-
