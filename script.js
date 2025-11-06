@@ -181,3 +181,107 @@ document.addEventListener('click', function(e) {
     overlay.addEventListener('click', () => overlay.remove());
   }
 });
+/* =============================
+   ✅ SCREENSHOT UPGRADE (KEEP ORIGINAL HTML)
+   ============================= */
+
+const SS_KEY = `screenshots-${date}`;    // per-day storage key
+let SS_DB = JSON.parse(localStorage.getItem(SS_KEY) || "{}");
+
+// Function to save screenshots
+function saveScreenshots() {
+  localStorage.setItem(SS_KEY, JSON.stringify(SS_DB));
+}
+
+// Automatically insert preview <img> NEXT to your upload-placeholder
+function insertPreviewElement(cell) {
+  let img = cell.querySelector(".auto-preview");
+  if (!img) {
+    img = document.createElement("img");
+    img.className = "auto-preview";
+    img.style.cssText = `
+      width: 70px;
+      height: 70px;
+      border-radius: 6px;
+      object-fit: cover;
+      margin-top: 6px;
+      display: none;
+    `;
+    cell.appendChild(img);
+  }
+  return img;
+}
+
+// Load saved screenshots on page load
+function loadSavedScreenshots() {
+  const rows = document.querySelectorAll("#tradeBody tr");
+  rows.forEach((row, index) => {
+    const cell = row.querySelectorAll("td")[6];  // screenshot column
+    if (!cell) return;
+
+    const saved = SS_DB[index];
+    if (!saved) return;
+
+    const img = insertPreviewElement(cell);
+    img.src = saved;
+    img.style.display = "block";
+
+    // Hide placeholder
+    const placeholder = cell.querySelector(".upload-placeholder");
+    if (placeholder) placeholder.style.display = "none";
+  });
+}
+
+// Handle screenshot upload
+document.addEventListener("change", e => {
+  if (!e.target.matches('td input[type="file"]')) return;
+
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const row = e.target.closest("tr");
+  const index = Array.from(row.parentNode.children).indexOf(row);
+  const reader = new FileReader();
+
+  reader.onload = ev => {
+    const base64 = ev.target.result;
+
+    // save
+    SS_DB[index] = base64;
+    saveScreenshots();
+
+    // show preview
+    const cell = e.target.closest("td");
+    const img = insertPreviewElement(cell);
+    img.src = base64;
+    img.style.display = "block";
+
+    // hide "Upload" placeholder
+    const placeholder = cell.querySelector(".upload-placeholder");
+    if (placeholder) placeholder.style.display = "none";
+  };
+
+  reader.readAsDataURL(file);
+});
+
+// When deleting a row, shift screenshot indexes
+document.addEventListener("click", e => {
+  if (!e.target.classList.contains("deleteRow")) return;
+
+  const tr = e.target.closest("tr");
+  const index = Array.from(tr.parentNode.children).indexOf(tr);
+
+  delete SS_DB[index];
+
+  // rebuild map so screenshot indexes match row order
+  const newMap = {};
+  document.querySelectorAll("#tradeBody tr").forEach((row, i) => {
+    if (SS_DB[i] !== undefined) newMap[i] = SS_DB[i];
+  });
+
+  SS_DB = newMap;
+  saveScreenshots();
+});
+  
+// Call loader after HTML is built
+window.addEventListener("load", loadSavedScreenshots);
