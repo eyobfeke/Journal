@@ -40,20 +40,30 @@ nextMonthBtn.onclick = () => {
 
 renderCalendar();
 
-// === Theme Toggle (Permanent Dark Mode) ===
+// === Theme Toggle (Save & Load) ===
 const themeToggle = document.getElementById("theme-toggle");
 
 function applyTheme(theme) {
   if (theme === "dark") {
-    document.documentElement.classList.add("dark");
     document.body.classList.add("dark");
     themeToggle.textContent = "🌞";
   } else {
-    document.documentElement.classList.remove("dark");
     document.body.classList.remove("dark");
     themeToggle.textContent = "🌙";
   }
 }
+
+// Load saved theme or default to light
+let savedTheme = localStorage.getItem("theme") || "light";
+applyTheme(savedTheme);
+
+// Allow switching + save
+themeToggle.onclick = () => {
+  const newTheme = document.body.classList.contains("dark") ? "light" : "dark";
+  applyTheme(newTheme);
+  localStorage.setItem("theme", newTheme);
+};
+
 
 // Always default to dark and save it
 let savedTheme = localStorage.getItem("theme");
