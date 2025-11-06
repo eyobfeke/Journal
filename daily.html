@@ -1,382 +1,187 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Daily Trade Journal</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    :root {
-      --bg-light: #f8f9fa;
-      --text-light: #222;
-      --card-light: #ffffff;
-      --shadow-light: rgba(0,0,0,0.1);
-      --accent-light: #3b82f6;
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const date = params.get("date");
+  if (date) document.getElementById("pageTitle").textContent = "📘 Journal for " + date;
 
-      --bg-dark: #0f172a;
-      --text-dark: #e2e8f0;
-      --card-dark: #1e293b;
-      --shadow-dark: rgba(255,255,255,0.1);
-      --accent-dark: #60a5fa;
+  // Theme toggle
+  document.getElementById("toggleTheme").addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    document.body.classList.toggle("light");
+  });
+
+  // Add trade
+  const tradeBody = document.getElementById("tradeBody");
+  document.getElementById("addTrade").addEventListener("click", () => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td><input type="text" placeholder="EUR/USD"></td>
+      <td><input type="number" placeholder="1.0850"></td>
+      <td><input type="number" placeholder="1.0900"></td>
+      <td><input type="text" placeholder="1:3"></td>
+      <td><textarea placeholder="Setup notes..."></textarea></td>
+      <td><input type="number" class="pnl" placeholder="50"></td>
+      <td>
+        <!-- your HTML stays the same: either label+hidden input OR a plain input -->
+        <input type="file" accept="image/*">
+      </td>
+      <td><button class="deleteRow">🗑</button></td>`;
+    tradeBody.appendChild(row);
+  });
+
+  document.addEventListener("click", e => {
+    if (e.target.classList.contains("deleteRow")) {
+      const tr = e.target.closest("tr");
+      const idx = Array.from(tr.parentNode.children).indexOf(tr);
+      // also remove its screenshot from storage
+      delete shots[idx];
+      persistShots();
+      tr.remove();
+      // re-pack the shots array so indexes match rows again
+      reindexShots();
     }
+  });
 
-    body.light {
-      --bg: var(--bg-light);
-      --text: var(--text-light);
-      --card: var(--card-light);
-      --shadow: var(--shadow-light);
-      --accent: var(--accent-light);
+  // Auto Summary
+  document.addEventListener("input", e => {
+    if (e.target.classList.contains("pnl")) calculateSummary();
+  });
+
+  function calculateSummary() {
+    const pnls = Array.from(document.querySelectorAll(".pnl")).map(p => parseFloat(p.value) || 0);
+    if (pnls.length === 0) return;
+    const wins = pnls.filter(v => v > 0);
+    const losses = pnls.filter(v => v < 0);
+    const avgWin = wins.length ? (wins.reduce((a,b) => a+b,0)/wins.length).toFixed(2) : 0;
+    const avgLoss = losses.length ? (losses.reduce((a,b) => a+b,0)/losses.length).toFixed(2) : 0;
+    const winRate = ((wins.length / pnls.length) * 100).toFixed(1);
+    const totalRR = (wins.length - losses.length).toFixed(1);
+    document.getElementById("avgWin").textContent = `$${avgWin}`;
+    document.getElementById("avgLoss").textContent = `$${avgLoss}`;
+    document.getElementById("winRate").textContent = `${winRate}%`;
+    document.getElementById("totalRR").textContent = totalRR;
+  }
+
+  /* ========= SCREENSHOTS: PERSISTENT & AUTO-PREVIEW ========= */
+
+  // storage for this day
+  const SHOTS_KEY = `journalShots-${date}`;
+  let shots = JSON.parse(localStorage.getItem(SHOTS_KEY) || "{}"); // {rowIndex: base64}
+
+  function persistShots() {
+    localStorage.setItem(SHOTS_KEY, JSON.stringify(shots));
+  }
+
+  // after deletions, keep indexes aligned with current table rows
+  function reindexShots() {
+    const newMap = {};
+    document.querySelectorAll("#tradeBody tr").forEach((tr, i) => {
+      const oldIdx = tr.dataset.idx ? parseInt(tr.dataset.idx, 10) : i;
+      if (shots[oldIdx]) newMap[i] = shots[oldIdx];
+      tr.dataset.idx = i;
+    });
+    shots = newMap;
+    persistShots();
+    // redraw previews to match
+    restorePreviewsFromShots();
+  }
+
+  // Find or create a tiny thumbnail inside the screenshot cell
+  function ensurePreviewInCell(cell) {
+    let img = cell.querySelector("img.ss-prev");
+    if (!img) {
+      img = document.createElement("img");
+      img.className = "ss-prev";
+      img.style.cssText = "display:block;width:60px;height:60px;border-radius:6px;object-fit:cover;margin:4px auto;";
+      cell.appendChild(img);
     }
+    return img;
+  }
 
-    body.dark {
-      --bg: var(--bg-dark);
-      --text: var(--text-dark);
-      --card: var(--card-dark);
-      --shadow: var(--shadow-dark);
-      --accent: var(--accent-dark);
-    }
+  // Event delegation: catch BOTH your hidden input and plain input
+  document.addEventListener("change", (e) => {
+    const isScreenshotInput =
+      e.target.matches('td input[type="file"]') ||
+      e.target.matches('.image-upload input[type="file"]');
 
-    body {
-      font-family: "Inter", sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 40px 0;
-      transition: background 0.3s, color 0.3s;
-    }
+    if (!isScreenshotInput) return;
 
-    .container {
-      width: 95%;
-      max-width: 1200px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 25px;
-    }
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
 
-    h1 {
-      text-align: center;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
+    const tr = e.target.closest("tr");
+    const idx = Array.from(tr.parentNode.children).indexOf(tr);
+    tr.dataset.idx = idx;
 
-    a {
-      display: block;
-      text-align: center;
-      margin-bottom: 20px;
-      color: var(--accent);
-      text-decoration: none;
-    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const base64 = ev.target.result;
 
-    a:hover { text-decoration: underline; }
+      // show thumbnail in the same cell
+      const cell = e.target.closest("td");
+      const img = ensurePreviewInCell(cell);
+      img.src = base64;
 
-    .card {
-      background: var(--card);
-      border-radius: 12px;
-      box-shadow: 0 2px 10px var(--shadow);
-      padding: 20px 25px;
-    }
+      // save to storage
+      shots[idx] = base64;
+      persistShots();
+    };
+    reader.readAsDataURL(file);
+  });
 
-    h2 {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-      border-bottom: 2px solid var(--accent);
-      padding-bottom: 5px;
-    }
+  // Draw all saved previews into the table cells
+  function restorePreviewsFromShots() {
+    document.querySelectorAll("#tradeBody tr").forEach((tr, i) => {
+      const base64 = shots[i];
+      if (!base64) return;
+      const screenshotCell = tr.querySelectorAll("td")[6]; // 7th column ("Screenshot")
+      if (!screenshotCell) return;
+      const img = ensurePreviewInCell(screenshotCell);
+      img.src = base64;
+    });
+  }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
+  /* ========= SAVE / LOAD ========= */
 
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px 10px;
-      text-align: center;
-    }
+  // Save data
+  document.getElementById("saveBtn").addEventListener("click", () => {
+    const rows = Array.from(document.querySelectorAll("#tradeBody tr"));
 
-    th {
-      background: var(--accent);
-      color: #fff;
-      font-weight: 500;
-    }
-
-    input, textarea {
-      width: 98%;
-      padding: 6px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      background: var(--card);
-      color: var(--text);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 70px;
-    }
-
-    .btn {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 16px;
-      font-weight: 500;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .btn:hover { opacity: 0.9; }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 25px;
-    }
-
-    .mood-group {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .mood-option {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 0.9rem;
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 25px;
-      color: #888;
-      font-size: 0.8rem;
-    }
-
-    .theme-toggle {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 15px;
-    }
-
-    .theme-toggle button {
-      background: none;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      padding: 6px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .theme-toggle button:hover {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    #saveBtn {
-      width: 95%;
-      max-width: 1200px;
-      display: block;
-      margin: 20px auto 0;
-      font-size: 1rem;
-      padding: 12px;
-    }
-  </style>
-</head>
-<body class="light">
-  <h1 id="pageTitle">📘 Journal for DATE</h1>
-  <a href="index.html">← Back to Calendar</a>
-
-  <div class="theme-toggle">
-    <button id="toggleTheme">🌗 Toggle Theme</button>
-  </div>
-
-  <div class="container">
-    <!-- TRADE DETAILS -->
-    <div class="card">
-      <h2>📊 Trade Details</h2>
-      <table id="tradeTable">
-        <thead>
-          <tr>
-            <th>Pair</th>
-            <th>Entry</th>
-            <th>Exit</th>
-            <th>R:R</th>
-            <th>Notes</th>
-            <th>PnL ($)</th>
-            <th>Screenshot</th>
-            <th>❌</th>
-          </tr>
-        </thead>
-        <tbody id="tradeBody">
-       <tr>
-  <td><input type="text" placeholder="EUR/USD"></td>
-  <td><input type="number" placeholder="1.0850" step="0.0001"></td>
-  <td><input type="number" placeholder="1.0900" step="0.0001"></td>
-  <td><input type="text" class="rr" placeholder="1:3"></td>
-  <td><textarea placeholder="Setup notes..."></textarea></td>
-  <td><input type="number" class="pnl" placeholder="$0" readonly></td>
-<td>
-  <label class="image-upload">
-    <input type="file" accept="image/*" style="display: none;" />
-    <div class="upload-placeholder">
-      <span class="upload-icon">📷</span>
-      <span class="upload-text">Upload</span>
-    </div>
-  </label>
-</td>
-
-  <td><button class="deleteRow">❌</button></td>
-</tr>
-        </tbody>
-      </table>
-      <button class="btn" id="addTrade">➕ Add Trade</button>
-    </div>
-
-    <!-- TRADE SUMMARY -->
-    <div class="card">
-      <h2>📈 Daily Summary</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Avg Win</th>
-            <th>Avg Loss</th>
-            <th>Total RR</th>
-            <th>Win Rate</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td id="avgWin">$0</td>
-            <td id="avgLoss">$0</td>
-            <td id="totalRR">0</td>
-            <td id="winRate">0%</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- LOWER GRID -->
-    <div class="grid-2">
-      <div class="card">
-        <h2>📝 Daily Reflection</h2>
-        <textarea id="reflection" placeholder="What did you learn today?"></textarea>
-      </div>
-      <div class="card">
-        <h2>🙏 Gratitude</h2>
-        <textarea id="gratitude" placeholder="Things you are grateful for..."></textarea>
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="card">
-        <h2>🎯 Tomorrow’s Goals</h2>
-        <textarea id="goals" placeholder="What to improve tomorrow?"></textarea>
-      </div>
-      <div class="card">
-        <h2>🌞 Mood Tracker</h2>
-        <div class="mood-group" id="moodGroup">
-          <label class="mood-option">😊<input type="radio" name="mood" value="happy"></label>
-          <label class="mood-option">😐<input type="radio" name="mood" value="neutral"></label>
-          <label class="mood-option">😔<input type="radio" name="mood" value="sad"></label>
-          <label class="mood-option">😩<input type="radio" name="mood" value="stressed"></label>
-          <label class="mood-option">💪<input type="radio" name="mood" value="confident"></label>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <button class="btn" id="saveBtn">💾 Save All</button>
-
-  <footer>Made with ❤️ using GitHub Pages</footer>
-
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const date = params.get("date");
-    if (date) document.getElementById("pageTitle").textContent = "📘 Journal for " + date;
-
-    // Theme toggle
-    document.getElementById("toggleTheme").addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      document.body.classList.toggle("light");
+    const trades = rows.map((tr, idx) => {
+      const fields = tr.querySelectorAll("input,textarea");
+      // Your column order is fixed; keep it exactly the same
+      const pair  = fields[0]?.value || "";
+      const entry = fields[1]?.value || "";
+      const exit  = fields[2]?.value || "";
+      const rr    = fields[3]?.value || "";
+      const notes = fields[4]?.value || "";
+      const pnl   = tr.querySelector(".pnl")?.value || "";
+      const screenshot = shots[idx] || null; // attach screenshot
+      return { pair, entry, exit, rr, notes, pnl, screenshot };
     });
 
-    // Add trade
-    const tradeBody = document.getElementById("tradeBody");
-    document.getElementById("addTrade").addEventListener("click", () => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td><input type="text" placeholder="EUR/USD"></td>
-        <td><input type="number" placeholder="1.0850"></td>
-        <td><input type="number" placeholder="1.0900"></td>
-        <td><input type="text" placeholder="1:3"></td>
-        <td><textarea placeholder="Setup notes..."></textarea></td>
-        <td><input type="number" class="pnl" placeholder="50"></td>
-        <td><input type="file" accept="image/*"></td>
-        <td><button class="deleteRow">🗑</button></td>`;
-      tradeBody.appendChild(row);
-    });
+    const data = {
+      trades,
+      reflection: document.getElementById("reflection").value,
+      gratitude: document.getElementById("gratitude").value,
+      goals: document.getElementById("goals").value,
+      mood: document.querySelector("input[name='mood']:checked")?.value || ""
+    };
 
-    document.addEventListener("click", e => {
-      if (e.target.classList.contains("deleteRow")) e.target.closest("tr").remove();
-    });
+    localStorage.setItem(`journal-${date}`, JSON.stringify(data));
+    persistShots(); // make sure latest thumbnails are stored
+    alert("✅ Saved!");
+  });
 
-    // Auto Summary
-    document.addEventListener("input", e => {
-      if (e.target.classList.contains("pnl")) calculateSummary();
-    });
-
-    function calculateSummary() {
-      const pnls = Array.from(document.querySelectorAll(".pnl")).map(p => parseFloat(p.value) || 0);
-      if (pnls.length === 0) return;
-      const wins = pnls.filter(v => v > 0);
-      const losses = pnls.filter(v => v < 0);
-      const avgWin = wins.length ? (wins.reduce((a,b) => a+b,0)/wins.length).toFixed(2) : 0;
-      const avgLoss = losses.length ? (losses.reduce((a,b) => a+b,0)/losses.length).toFixed(2) : 0;
-      const winRate = ((wins.length / pnls.length) * 100).toFixed(1);
-      const totalRR = (wins.length - losses.length).toFixed(1);
-      document.getElementById("avgWin").textContent = `$${avgWin}`;
-      document.getElementById("avgLoss").textContent = `$${avgLoss}`;
-      document.getElementById("winRate").textContent = `${winRate}%`;
-      document.getElementById("totalRR").textContent = totalRR;
-    }
-
-    // Save data
-    document.getElementById("saveBtn").addEventListener("click", () => {
-      const trades = Array.from(document.querySelectorAll("#tradeBody tr")).map(tr => ({
-        pair: tr.querySelectorAll("input,textarea")[0].value,
-        entry: tr.querySelectorAll("input,textarea")[1].value,
-        exit: tr.querySelectorAll("input,textarea")[2].value,
-        rr: tr.querySelectorAll("input,textarea")[3].value,
-        notes: tr.querySelectorAll("input,textarea")[4].value,
-        pnl: tr.querySelector(".pnl").value
-      }));
-      const data = {
-        trades,
-        reflection: document.getElementById("reflection").value,
-        gratitude: document.getElementById("gratitude").value,
-        goals: document.getElementById("goals").value,
-        mood: document.querySelector("input[name='mood']:checked")?.value || ""
-      };
-      localStorage.setItem(`journal-${date}`, JSON.stringify(data));
-      alert("✅ Saved!");
-    });
-
-    // Load data
-    window.addEventListener("load", () => {
-      const saved = localStorage.getItem(`journal-${date}`);
-      if (!saved) return;
+  // Load data
+  window.addEventListener("load", () => {
+    const saved = localStorage.getItem(`journal-${date}`);
+    if (saved) {
       const data = JSON.parse(saved);
       if (data.trades) {
         tradeBody.innerHTML = "";
-        data.trades.forEach(t => {
+        data.trades.forEach((t, idx) => {
           const row = document.createElement("tr");
+          row.dataset.idx = idx;
           row.innerHTML = `
             <td><input type="text" value="${t.pair || ""}"></td>
             <td><input type="number" value="${t.entry || ""}"></td>
@@ -384,11 +189,21 @@
             <td><input type="text" value="${t.rr || ""}"></td>
             <td><textarea>${t.notes || ""}</textarea></td>
             <td><input type="number" class="pnl" value="${t.pnl || ""}"></td>
-            <td><input type="file" accept="image/*"></td>
+            <td>
+              <!-- keep your markup simple; input is enough, preview is injected by JS -->
+              <input type="file" accept="image/*">
+            </td>
             <td><button class="deleteRow">🗑</button></td>`;
           tradeBody.appendChild(row);
+
+          // If screenshot was saved inside the main journal data, mirror it to shots store
+          if (t.screenshot) {
+            shots[idx] = t.screenshot;
+          }
         });
+        persistShots();
       }
+
       document.getElementById("reflection").value = data.reflection || "";
       document.getElementById("gratitude").value = data.gratitude || "";
       document.getElementById("goals").value = data.goals || "";
@@ -396,8 +211,10 @@
         const moodEl = document.querySelector(`input[name='mood'][value='${data.mood}']`);
         if (moodEl) moodEl.checked = true;
       }
-      calculateSummary();
-    });
-  </script>
-</body>
-</html>
+    }
+
+    // draw thumbnails from shots store (whether loaded from separate store or from data.trades)
+    restorePreviewsFromShots();
+    calculateSummary();
+  });
+</script>
