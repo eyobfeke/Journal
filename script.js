@@ -40,24 +40,26 @@ nextMonthBtn.onclick = () => {
 
 renderCalendar();
 
-// === Theme Toggle (Save & Load) ===
+
+
+// === THEME SYSTEM (FINAL WORKING VERSION) ===
 const themeToggle = document.getElementById("theme-toggle");
 
 function applyTheme(theme) {
   if (theme === "dark") {
     document.body.classList.add("dark");
-    themeToggle.textContent = "🌞";
+    themeToggle.textContent = "🌞"; // sun icon for light mode
   } else {
     document.body.classList.remove("dark");
-    themeToggle.textContent = "🌙";
+    themeToggle.textContent = "🌙"; // moon icon for dark mode
   }
 }
 
-// Load saved theme or default to light
+// Load saved theme or default → light
 let savedTheme = localStorage.getItem("theme") || "light";
 applyTheme(savedTheme);
 
-// Allow switching + save
+// Toggle + save permanently
 themeToggle.onclick = () => {
   const newTheme = document.body.classList.contains("dark") ? "light" : "dark";
   applyTheme(newTheme);
@@ -65,20 +67,8 @@ themeToggle.onclick = () => {
 };
 
 
-// Always default to dark and save it
-let savedTheme = localStorage.getItem("theme");
-if (!savedTheme) {
-  savedTheme = "dark";
-  localStorage.setItem("theme", "dark");
-}
 
-// Apply immediately before any rendering
-applyTheme(savedTheme);
-
-// Disable switching (keep dark permanent)
-themeToggle.onclick = () => {
-  alert("Dark mode is always enabled 🌙");
-};
+// === SCREENSHOT UPLOAD SYSTEM ===
 document.querySelectorAll('.screenshot-input').forEach(input => {
   input.addEventListener('change', function() {
     const container = this.closest('.screenshot-container');
@@ -114,6 +104,7 @@ document.querySelectorAll('.remove-screenshot').forEach(button => {
   });
 });
 
+// Enlarged popup image view
 document.addEventListener('click', function(e) {
   if (e.target.classList.contains('screenshot-preview')) {
     const img = e.target;
