@@ -68,7 +68,47 @@ themeToggle.onclick = () => {
 
 
 
-// === SCREENSHOT UPLOAD SYSTEM ===
+// ✅✅✅ === PERMANENT SCREENSHOT SYSTEM === ✅✅✅
+
+// Get the current day from URL
+const params = new URLSearchParams(window.location.search);
+const day = params.get("day");
+const month = params.get("month");
+const year = params.get("year");
+
+// Unique key for saving screenshot of this day
+const DAY_KEY = `${year}-${month}-${day}`;
+
+// Save screenshot into localStorage
+function saveScreenshot(base64) {
+  let data = JSON.parse(localStorage.getItem("journalScreenshots") || "{}");
+  data[DAY_KEY] = base64;
+  localStorage.setItem("journalScreenshots", JSON.stringify(data));
+}
+
+// Load screenshot if it exists
+function loadScreenshot() {
+  let data = JSON.parse(localStorage.getItem("journalScreenshots") || "{}");
+  const saved = data[DAY_KEY];
+
+  if (saved) {
+    document.querySelectorAll('.screenshot-container').forEach(container => {
+      const preview = container.querySelector('.screenshot-preview');
+      const removeBtn = container.querySelector('.remove-screenshot');
+      const label = container.querySelector('.upload-label');
+
+      preview.src = saved;
+      preview.style.display = "block";
+      removeBtn.style.display = "inline";
+      label.style.display = "none";
+    });
+  }
+}
+
+loadScreenshot();
+
+
+// === SCREENSHOT UPLOAD SYSTEM (UPDATED WITH SAVE) ===
 document.querySelectorAll('.screenshot-input').forEach(input => {
   input.addEventListener('change', function() {
     const container = this.closest('.screenshot-container');
@@ -79,28 +119,39 @@ document.querySelectorAll('.screenshot-input').forEach(input => {
     if (file) {
       const reader = new FileReader();
       reader.onload = e => {
-        preview.src = e.target.result;
+        const base64 = e.target.result;
+
+        preview.src = base64;
         preview.style.display = 'block';
         removeBtn.style.display = 'inline';
         container.querySelector('.upload-label').style.display = 'none';
+
+        // ✅ Save permanently
+        saveScreenshot(base64);
       };
       reader.readAsDataURL(file);
     }
   });
 });
 
+// === REMOVE SCREENSHOT (UPDATED WITH DELETE) ===
 document.querySelectorAll('.remove-screenshot').forEach(button => {
   button.addEventListener('click', function() {
     const container = this.closest('.screenshot-container');
     const preview = container.querySelector('.screenshot-preview');
     const input = container.querySelector('.screenshot-input');
     const label = container.querySelector('.upload-label');
-    
+
     input.value = '';
     preview.src = '';
     preview.style.display = 'none';
     this.style.display = 'none';
     label.style.display = 'inline-flex';
+
+    // ✅ Remove from localStorage
+    let data = JSON.parse(localStorage.getItem("journalScreenshots") || "{}");
+    delete data[DAY_KEY];
+    localStorage.setItem("journalScreenshots", JSON.stringify(data));
   });
 });
 
