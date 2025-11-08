@@ -1,225 +1,137 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Daily Trade Journal</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    /* ✅ Screenshot Upload + Modal Styling */
-    .hidden {
-      display: none;
-    }
+<!-- ✅ TRADE DETAILS -->
+<div class="section">
+  <h3>📊 Trade Details</h3>
 
-    .screenshot-upload {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
+  <table id="tradeTable">
+    <thead>
+      <tr>
+        <th>Pair</th>
+        <th>Entry</th>
+        <th>Exit</th>
+        <th>R:R</th>
+        <th>Notes</th>
+        <th>PnL ($)</th>
+        <th>Screenshot</th>
+        <th>❌</th>
+      </tr>
+    </thead>
 
-    .upload-btn {
-      background: var(--accent, #2b67f6);
-      color: #fff;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+    <tbody id="tradeBody">
+      <tr>
+        <td><input type="text" placeholder="EUR/USD"></td>
+        <td><input type="number" placeholder="1.0850" step="0.0001"></td>
+        <td><input type="number" placeholder="1.0900" step="0.0001"></td>
+        <td><input type="text" class="rr" placeholder="1:3"></td>
+        <td><textarea placeholder="Setup notes..."></textarea></td>
+        <td><input type="number" class="pnl" placeholder="$0" readonly></td>
 
-    .upload-btn:hover {
-      background: var(--accent-hover, #1f52cc);
-    }
+        <td>
+          <div class="screenshot-upload" data-row-id="1">
+            <input type="file" accept="image/*" class="screenshot-input" style="display:none;">
+            <img src="" alt="Screenshot Preview" class="screenshot-preview hidden">
+            <button type="button" class="upload-btn">Upload</button>
+          </div>
+        </td>
 
-    .screenshot-preview {
-      width: 70px;
-      height: 70px;
-      object-fit: cover;
-      border-radius: 6px;
-      cursor: pointer;
-      border: 1px solid var(--accent, #2b67f6);
-    }
+        <td><button class="deleteRow">❌</button></td>
+      </tr>
+    </tbody>
+  </table>
 
-    .image-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
+  <button id="addTrade">➕ Add Trade</button>
+</div>
 
-    .image-modal.hidden {
-      display: none;
-    }
 
-    .image-modal .modal-content {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(255,255,255,0.3);
-    }
+<!-- ✅ DAILY SUMMARY (Corrected) -->
+<div class="section">
+  <h3>📈 Daily Summary</h3>
 
-    .image-modal .close-modal {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      color: white;
-      font-size: 2rem;
-      cursor: pointer;
-    }
-  </style>
-</head>
+  <table id="dailySummaryTable">
+    <thead>
+      <tr>
+        <th>Avg Win</th>
+        <th>Avg Loss</th>
+        <th>Total R:R</th>
+        <th>Win Rate</th>
+      </tr>
+    </thead>
 
-<body>
-  <div class="container">
-    <a href="index.html" class="back-link">← Back to Calendar</a>
-    <button id="toggleTheme" class="theme-btn">🌓 Toggle Theme</button>
+    <tbody>
+      <tr>
+        <td id="avgWin">$0</td>
+        <td id="avgLoss">$0</td>
+        <td id="totalRR">0</td>
+        <td id="winRate">0%</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-    <h2 id="journalDate">Journal for DATE</h2>
 
-    <!-- ✅ Trade Table -->
-    <div class="section">
-      <h3>📊 Trade Details</h3>
-      <table id="tradeTable">
-        <thead>
-          <tr>
-            <th>Pair</th>
-            <th>Entry</th>
-            <th>Exit</th>
-            <th>R:R</th>
-            <th>Notes</th>
-            <th>PnL ($)</th>
-            <th>Screenshot</th>
-            <th>❌</th>
-          </tr>
-        </thead>
+<!-- ✅ DAILY REFLECTION (Structured) -->
+<div class="section">
+  <h3>🧠 Daily Reflection</h3>
 
-        <!-- ✅ Trade Body -->
-        <tbody id="tradeBody">
-          <tr>
-            <td><input type="text" placeholder="EUR/USD"></td>
-            <td><input type="number" placeholder="1.0850" step="0.0001"></td>
-            <td><input type="number" placeholder="1.0900" step="0.0001"></td>
-            <td><input type="text" class="rr" placeholder="1:3"></td>
-            <td><textarea placeholder="Setup notes..."></textarea></td>
-            <td><input type="number" class="pnl" placeholder="$0" readonly></td>
-            <td>
-              <div class="screenshot-upload" data-row-id="1">
-                <input type="file" accept="image/*" class="screenshot-input" style="display:none;">
-                <img src="" alt="Screenshot Preview" class="screenshot-preview hidden">
-                <button type="button" class="upload-btn">Upload</button>
-              </div>
-            </td>
-            <td><button class="deleteRow">❌</button></td>
-          </tr>
-        </tbody>
-      </table>
-      <button id="addTrade">➕ Add Trade</button>
-    </div>
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <textarea id="reflection" placeholder="What did you learn today?"></textarea>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-    <!-- ✅ Daily Summary -->
-    <div class="section">
-      <h3>📈 Daily Summary</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Avg Win</th>
-            <th>Avg Loss</th>
-            <th>Total R:R</th>
-            <th>Win Rate</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td id="avgWin">$0</td>
-            <td id="avgLoss">$0</td>
-            <td id="totalRR">0</td>
-            <td id="winRate">0%</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
 
-    <!-- ✅ Reflection & Gratitude -->
-    <div class="section">
-      <h3>🧠 Daily Reflection</h3>
-      <textarea id="reflection" placeholder="What did you learn today?"></textarea>
+<!-- ✅ GRATITUDE (Structured) -->
+<div class="section">
+  <h3>🙏 Gratitude</h3>
 
-      <h3>🙏 Gratitude</h3>
-      <textarea id="gratitude" placeholder="Things you are grateful for..."></textarea>
-    </div>
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <textarea id="gratitude" placeholder="Things you are grateful for..."></textarea>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-    <!-- ✅ Tomorrow Goals -->
-    <div class="section">
-      <h3>🎯 Tomorrow’s Goals</h3>
-      <textarea id="goals" placeholder="What to improve tomorrow?"></textarea>
-    </div>
 
-    <!-- ✅ Mood Tracker -->
-    <div class="section">
-      <h3>🌤 Mood Tracker</h3>
-      <div class="mood">
-        <label><input type="radio" name="mood" value="1"> 😞</label>
-        <label><input type="radio" name="mood" value="2"> 😐</label>
-        <label><input type="radio" name="mood" value="3"> 🙂</label>
-        <label><input type="radio" name="mood" value="4"> 😄</label>
-        <label><input type="radio" name="mood" value="5"> 🤩</label>
-      </div>
-    </div>
+<!-- ✅ TOMORROW'S GOALS (Structured) -->
+<div class="section">
+  <h3>🎯 Tomorrow’s Goals</h3>
 
-    <button id="saveAll">💾 Save All</button>
-  </div>
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          <textarea id="goals" placeholder="What to improve tomorrow?"></textarea>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-  <!-- ✅ Fullscreen Image Modal -->
-  <div id="imageModal" class="image-modal hidden">
-    <span class="close-modal">&times;</span>
-    <img class="modal-content" id="modalImage">
-  </div>
 
-  <script>
-    // ✅ Screenshot logic
-    document.addEventListener('DOMContentLoaded', () => {
-      const uploadButtons = document.querySelectorAll('.upload-btn');
-      const modal = document.getElementById('imageModal');
-      const modalImg = document.getElementById('modalImage');
-      const closeModal = document.querySelector('.close-modal');
+<!-- ✅ MOOD TRACKER (Structured) -->
+<div class="section">
+  <h3>🌤 Mood Tracker</h3>
 
-      uploadButtons.forEach((btn) => {
-        const container = btn.closest('.screenshot-upload');
-        const input = container.querySelector('.screenshot-input');
-        const preview = container.querySelector('.screenshot-preview');
+  <table>
+    <tbody>
+      <tr>
+        <td class="mood">
+          <label><input type="radio" name="mood" value="1"> 😞</label>
+          <label><input type="radio" name="mood" value="2"> 😐</label>
+          <label><input type="radio" name="mood" value="3"> 🙂</label>
+          <label><input type="radio" name="mood" value="4"> 😄</label>
+          <label><input type="radio" name="mood" value="5"> 🤩</label>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-        btn.addEventListener('click', () => input.click());
-
-        input.addEventListener('change', () => {
-          const file = input.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = e => {
-            preview.src = e.target.result;
-            preview.classList.remove('hidden');
-            btn.classList.add('hidden');
-          };
-          reader.readAsDataURL(file);
-        });
-
-        preview.addEventListener('click', () => {
-          modal.classList.remove('hidden');
-          modalImg.src = preview.src;
-        });
-      });
-
-      closeModal.addEventListener('click', () => {
-        modal.classList.add('hidden');
-      });
-
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.classList.add('hidden');
-      });
-    });
-  </script>
-</body>
-</html>
