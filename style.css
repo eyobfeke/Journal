@@ -92,7 +92,7 @@ button:hover {
   max-width: 1100px;
   margin: 50px auto;
   padding: 0;
-  background: transparent; /* remove large outer box */
+  background: transparent;
   box-shadow: none;
   border: none;
 }
@@ -100,7 +100,7 @@ button:hover {
 /* === Each Day Box === */
 .day {
   aspect-ratio: 1 / 1;
-  background: var(--card); /* keeps each inside box */
+  background: var(--card);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -125,7 +125,6 @@ button:hover {
   color: white;
 }
 
-
 /* === Footer === */
 footer {
   text-align: center;
@@ -133,6 +132,7 @@ footer {
   color: var(--text);
   opacity: 0.7;
 }
+
 .image-upload {
   display: flex;
   justify-content: center;
@@ -166,6 +166,7 @@ footer {
   box-shadow: 0 0 20px rgba(0,0,0,0.8);
   background: rgba(0,0,0,0.9);
 }
+
 .screenshot-container {
   display: flex;
   flex-direction: column;
@@ -206,6 +207,7 @@ footer {
 .remove-screenshot:hover {
   text-decoration: underline;
 }
+
 .screenshot-upload {
   display: flex;
   flex-direction: column;
@@ -261,20 +263,22 @@ footer {
   font-size: 40px;
   cursor: pointer;
 }
-/* ✅ Clean table-grid separation */
-.section table {
+
+/* ✅ Clean grid layout ONLY for Daily Summary table */
+.section h3:nth-of-type(1n):contains("Daily Summary") + table,
+.section h3:contains("Daily Summary") + * table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.section table th,
-.section table td {
+.section h3:contains("Daily Summary") + table th,
+.section h3:contains("Daily Summary") + table td {
   border: 1px solid var(--accent, #2b67f6);
   padding: 8px;
   text-align: center;
 }
 
-.section table thead th {
+.section h3:contains("Daily Summary") + table thead th {
   background: var(--accent, #2b67f6);
   color: #fff;
 }
