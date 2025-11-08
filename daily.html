@@ -6,201 +6,83 @@
   <title>Daily Trade Journal</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    :root {
-      --bg-light: #f8f9fa;
-      --text-light: #222;
-      --card-light: #ffffff;
-      --shadow-light: rgba(0,0,0,0.1);
-      --accent-light: #3b82f6;
-
-      --bg-dark: #0f172a;
-      --text-dark: #e2e8f0;
-      --card-dark: #1e293b;
-      --shadow-dark: rgba(255,255,255,0.1);
-      --accent-dark: #60a5fa;
+    /* ✅ Screenshot Upload + Modal Styling */
+    .hidden {
+      display: none;
     }
 
-    body.light {
-      --bg: var(--bg-light);
-      --text: var(--text-light);
-      --card: var(--card-light);
-      --shadow: var(--shadow-light);
-      --accent: var(--accent-light);
-    }
-
-    body.dark {
-      --bg: var(--bg-dark);
-      --text: var(--text-dark);
-      --card: var(--card-dark);
-      --shadow: var(--shadow-dark);
-      --accent: var(--accent-dark);
-    }
-
-    body {
-      font-family: "Inter", sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 40px 0;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    .container {
-      width: 95%;
-      max-width: 1200px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 25px;
-    }
-
-    h1 {
-      text-align: center;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    a {
-      display: block;
-      text-align: center;
-      margin-bottom: 20px;
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    a:hover { text-decoration: underline; }
-
-    .card {
-      background: var(--card);
-      border-radius: 12px;
-      box-shadow: 0 2px 10px var(--shadow);
-      padding: 20px 25px;
-    }
-
-    h2 {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-      border-bottom: 2px solid var(--accent);
-      padding-bottom: 5px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px 10px;
-      text-align: center;
-    }
-
-    th {
-      background: var(--accent);
-      color: #fff;
-      font-weight: 500;
-    }
-
-    input, textarea {
-      width: 98%;
-      padding: 6px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      background: var(--card);
-      color: var(--text);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 70px;
-    }
-
-    .btn {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 16px;
-      font-weight: 500;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .btn:hover { opacity: 0.9; }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 25px;
-    }
-
-    .mood-group {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .mood-option {
+    .screenshot-upload {
       display: flex;
       flex-direction: column;
       align-items: center;
-      font-size: 0.9rem;
+      gap: 6px;
     }
 
-    footer {
-      text-align: center;
-      margin-top: 25px;
-      color: #888;
-      font-size: 0.8rem;
+    .upload-btn {
+      background: var(--accent, #2b67f6);
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.2s;
     }
 
-    .theme-toggle {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 15px;
+    .upload-btn:hover {
+      background: var(--accent-hover, #1f52cc);
     }
 
-    .theme-toggle button {
-      background: none;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      padding: 6px 14px;
+    .screenshot-preview {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
       border-radius: 6px;
       cursor: pointer;
+      border: 1px solid var(--accent, #2b67f6);
     }
 
-    .theme-toggle button:hover {
-      background: var(--accent);
-      color: #fff;
+    .image-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
     }
 
-    #saveBtn {
-      width: 95%;
-      max-width: 1200px;
-      display: block;
-      margin: 20px auto 0;
-      font-size: 1rem;
-      padding: 12px;
+    .image-modal.hidden {
+      display: none;
+    }
+
+    .image-modal .modal-content {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(255,255,255,0.3);
+    }
+
+    .image-modal .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
     }
   </style>
 </head>
-<body class="light">
-  <h1 id="pageTitle">📘 Journal for DATE</h1>
-  <a href="index.html">← Back to Calendar</a>
 
-  <div class="theme-toggle">
-    <button id="toggleTheme">🌗 Toggle Theme</button>
-  </div>
-
+<body>
   <div class="container">
-    <!-- TRADE DETAILS -->
-    <div class="card">
-      <h2>📊 Trade Details</h2>
+    <a href="index.html" class="back-link">← Back to Calendar</a>
+    <button id="toggleTheme" class="theme-btn">🌓 Toggle Theme</button>
+
+    <h2 id="journalDate">Journal for DATE</h2>
+
+    <!-- ✅ Trade Table -->
+    <div class="section">
+      <h3>📊 Trade Details</h3>
       <table id="tradeTable">
         <thead>
           <tr>
@@ -214,44 +96,39 @@
             <th>❌</th>
           </tr>
         </thead>
+
+        <!-- ✅ Trade Body -->
         <tbody id="tradeBody">
-       <tr>
-  <td><input type="text" placeholder="EUR/USD"></td>
-  <td><input type="number" placeholder="1.0850" step="0.0001"></td>
-  <td><input type="number" placeholder="1.0900" step="0.0001"></td>
-  <td><input type="text" class="rr" placeholder="1:3"></td>
-  <td><textarea placeholder="Setup notes..."></textarea></td>
-  <td><input type="number" class="pnl" placeholder="$0" readonly></td>
-<td>
-  <div class="screenshot-upload" data-row-id="1">
-    <input type="file" accept="image/*" class="screenshot-input" style="display:none;">
-    <img src="" alt="Screenshot Preview" class="screenshot-preview hidden">
-    <button type="button" class="upload-btn">Upload</button>
-  </div>
-</td>
-<div id="imageModal" class="image-modal hidden">
-  <span class="close-modal">&times;</span>
-  <img class="modal-content" id="modalImage">
-</div>
-<script src="script.js"></script>
-
-
-  <td><button class="deleteRow">❌</button></td>
-</tr>
+          <tr>
+            <td><input type="text" placeholder="EUR/USD"></td>
+            <td><input type="number" placeholder="1.0850" step="0.0001"></td>
+            <td><input type="number" placeholder="1.0900" step="0.0001"></td>
+            <td><input type="text" class="rr" placeholder="1:3"></td>
+            <td><textarea placeholder="Setup notes..."></textarea></td>
+            <td><input type="number" class="pnl" placeholder="$0" readonly></td>
+            <td>
+              <div class="screenshot-upload" data-row-id="1">
+                <input type="file" accept="image/*" class="screenshot-input" style="display:none;">
+                <img src="" alt="Screenshot Preview" class="screenshot-preview hidden">
+                <button type="button" class="upload-btn">Upload</button>
+              </div>
+            </td>
+            <td><button class="deleteRow">❌</button></td>
+          </tr>
         </tbody>
       </table>
-      <button class="btn" id="addTrade">➕ Add Trade</button>
+      <button id="addTrade">➕ Add Trade</button>
     </div>
 
-    <!-- TRADE SUMMARY -->
-    <div class="card">
-      <h2>📈 Daily Summary</h2>
+    <!-- ✅ Daily Summary -->
+    <div class="section">
+      <h3>📈 Daily Summary</h3>
       <table>
         <thead>
           <tr>
             <th>Avg Win</th>
             <th>Avg Loss</th>
-            <th>Total RR</th>
+            <th>Total R:R</th>
             <th>Win Rate</th>
           </tr>
         </thead>
@@ -266,141 +143,82 @@
       </table>
     </div>
 
-    <!-- LOWER GRID -->
-    <div class="grid-2">
-      <div class="card">
-        <h2>📝 Daily Reflection</h2>
-        <textarea id="reflection" placeholder="What did you learn today?"></textarea>
-      </div>
-      <div class="card">
-        <h2>🙏 Gratitude</h2>
-        <textarea id="gratitude" placeholder="Things you are grateful for..."></textarea>
+    <!-- ✅ Reflection & Gratitude -->
+    <div class="section">
+      <h3>🧠 Daily Reflection</h3>
+      <textarea id="reflection" placeholder="What did you learn today?"></textarea>
+
+      <h3>🙏 Gratitude</h3>
+      <textarea id="gratitude" placeholder="Things you are grateful for..."></textarea>
+    </div>
+
+    <!-- ✅ Tomorrow Goals -->
+    <div class="section">
+      <h3>🎯 Tomorrow’s Goals</h3>
+      <textarea id="goals" placeholder="What to improve tomorrow?"></textarea>
+    </div>
+
+    <!-- ✅ Mood Tracker -->
+    <div class="section">
+      <h3>🌤 Mood Tracker</h3>
+      <div class="mood">
+        <label><input type="radio" name="mood" value="1"> 😞</label>
+        <label><input type="radio" name="mood" value="2"> 😐</label>
+        <label><input type="radio" name="mood" value="3"> 🙂</label>
+        <label><input type="radio" name="mood" value="4"> 😄</label>
+        <label><input type="radio" name="mood" value="5"> 🤩</label>
       </div>
     </div>
 
-    <div class="grid-2">
-      <div class="card">
-        <h2>🎯 Tomorrow’s Goals</h2>
-        <textarea id="goals" placeholder="What to improve tomorrow?"></textarea>
-      </div>
-      <div class="card">
-        <h2>🌞 Mood Tracker</h2>
-        <div class="mood-group" id="moodGroup">
-          <label class="mood-option">😊<input type="radio" name="mood" value="happy"></label>
-          <label class="mood-option">😐<input type="radio" name="mood" value="neutral"></label>
-          <label class="mood-option">😔<input type="radio" name="mood" value="sad"></label>
-          <label class="mood-option">😩<input type="radio" name="mood" value="stressed"></label>
-          <label class="mood-option">💪<input type="radio" name="mood" value="confident"></label>
-        </div>
-      </div>
-    </div>
+    <button id="saveAll">💾 Save All</button>
   </div>
 
-  <button class="btn" id="saveBtn">💾 Save All</button>
-
-  <footer>Made with ❤️ using GitHub Pages</footer>
+  <!-- ✅ Fullscreen Image Modal -->
+  <div id="imageModal" class="image-modal hidden">
+    <span class="close-modal">&times;</span>
+    <img class="modal-content" id="modalImage">
+  </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const date = params.get("date");
-    if (date) document.getElementById("pageTitle").textContent = "📘 Journal for " + date;
+    // ✅ Screenshot logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const uploadButtons = document.querySelectorAll('.upload-btn');
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      const closeModal = document.querySelector('.close-modal');
 
-    // Theme toggle
-    document.getElementById("toggleTheme").addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      document.body.classList.toggle("light");
-    });
+      uploadButtons.forEach((btn) => {
+        const container = btn.closest('.screenshot-upload');
+        const input = container.querySelector('.screenshot-input');
+        const preview = container.querySelector('.screenshot-preview');
 
-    // Add trade
-    const tradeBody = document.getElementById("tradeBody");
-    document.getElementById("addTrade").addEventListener("click", () => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td><input type="text" placeholder="EUR/USD"></td>
-        <td><input type="number" placeholder="1.0850"></td>
-        <td><input type="number" placeholder="1.0900"></td>
-        <td><input type="text" placeholder="1:3"></td>
-        <td><textarea placeholder="Setup notes..."></textarea></td>
-        <td><input type="number" class="pnl" placeholder="50"></td>
-        <td><input type="file" accept="image/*"></td>
-        <td><button class="deleteRow">🗑</button></td>`;
-      tradeBody.appendChild(row);
-    });
+        btn.addEventListener('click', () => input.click());
 
-    document.addEventListener("click", e => {
-      if (e.target.classList.contains("deleteRow")) e.target.closest("tr").remove();
-    });
-
-    // Auto Summary
-    document.addEventListener("input", e => {
-      if (e.target.classList.contains("pnl")) calculateSummary();
-    });
-
-    function calculateSummary() {
-      const pnls = Array.from(document.querySelectorAll(".pnl")).map(p => parseFloat(p.value) || 0);
-      if (pnls.length === 0) return;
-      const wins = pnls.filter(v => v > 0);
-      const losses = pnls.filter(v => v < 0);
-      const avgWin = wins.length ? (wins.reduce((a,b) => a+b,0)/wins.length).toFixed(2) : 0;
-      const avgLoss = losses.length ? (losses.reduce((a,b) => a+b,0)/losses.length).toFixed(2) : 0;
-      const winRate = ((wins.length / pnls.length) * 100).toFixed(1);
-      const totalRR = (wins.length - losses.length).toFixed(1);
-      document.getElementById("avgWin").textContent = `$${avgWin}`;
-      document.getElementById("avgLoss").textContent = `$${avgLoss}`;
-      document.getElementById("winRate").textContent = `${winRate}%`;
-      document.getElementById("totalRR").textContent = totalRR;
-    }
-
-    // Save data
-    document.getElementById("saveBtn").addEventListener("click", () => {
-      const trades = Array.from(document.querySelectorAll("#tradeBody tr")).map(tr => ({
-        pair: tr.querySelectorAll("input,textarea")[0].value,
-        entry: tr.querySelectorAll("input,textarea")[1].value,
-        exit: tr.querySelectorAll("input,textarea")[2].value,
-        rr: tr.querySelectorAll("input,textarea")[3].value,
-        notes: tr.querySelectorAll("input,textarea")[4].value,
-        pnl: tr.querySelector(".pnl").value
-      }));
-      const data = {
-        trades,
-        reflection: document.getElementById("reflection").value,
-        gratitude: document.getElementById("gratitude").value,
-        goals: document.getElementById("goals").value,
-        mood: document.querySelector("input[name='mood']:checked")?.value || ""
-      };
-      localStorage.setItem(`journal-${date}`, JSON.stringify(data));
-      alert("✅ Saved!");
-    });
-
-    // Load data
-    window.addEventListener("load", () => {
-      const saved = localStorage.getItem(`journal-${date}`);
-      if (!saved) return;
-      const data = JSON.parse(saved);
-      if (data.trades) {
-        tradeBody.innerHTML = "";
-        data.trades.forEach(t => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td><input type="text" value="${t.pair || ""}"></td>
-            <td><input type="number" value="${t.entry || ""}"></td>
-            <td><input type="number" value="${t.exit || ""}"></td>
-            <td><input type="text" value="${t.rr || ""}"></td>
-            <td><textarea>${t.notes || ""}</textarea></td>
-            <td><input type="number" class="pnl" value="${t.pnl || ""}"></td>
-            <td><input type="file" accept="image/*"></td>
-            <td><button class="deleteRow">🗑</button></td>`;
-          tradeBody.appendChild(row);
+        input.addEventListener('change', () => {
+          const file = input.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = e => {
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+            btn.classList.add('hidden');
+          };
+          reader.readAsDataURL(file);
         });
-      }
-      document.getElementById("reflection").value = data.reflection || "";
-      document.getElementById("gratitude").value = data.gratitude || "";
-      document.getElementById("goals").value = data.goals || "";
-      if (data.mood) {
-        const moodEl = document.querySelector(`input[name='mood'][value='${data.mood}']`);
-        if (moodEl) moodEl.checked = true;
-      }
-      calculateSummary();
+
+        preview.addEventListener('click', () => {
+          modal.classList.remove('hidden');
+          modalImg.src = preview.src;
+        });
+      });
+
+      closeModal.addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.add('hidden');
+      });
     });
   </script>
 </body>
