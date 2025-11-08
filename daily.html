@@ -223,14 +223,18 @@
   <td><textarea placeholder="Setup notes..."></textarea></td>
   <td><input type="number" class="pnl" placeholder="$0" readonly></td>
 <td>
-  <label class="image-upload">
-    <input type="file" accept="image/*" style="display: none;" />
-    <div class="upload-placeholder">
-      <span class="upload-icon">📷</span>
-      <span class="upload-text">Upload</span>
-    </div>
-  </label>
+  <div class="screenshot-upload" data-row-id="1">
+    <input type="file" accept="image/*" class="screenshot-input" style="display:none;">
+    <img src="" alt="Screenshot Preview" class="screenshot-preview hidden">
+    <button type="button" class="upload-btn">Upload</button>
+  </div>
 </td>
+<div id="imageModal" class="image-modal hidden">
+  <span class="close-modal">&times;</span>
+  <img class="modal-content" id="modalImage">
+</div>
+<script src="script.js"></script>
+
 
   <td><button class="deleteRow">❌</button></td>
 </tr>
