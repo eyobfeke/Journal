@@ -285,3 +285,44 @@ document.addEventListener("click", e => {
   
 // Call loader after HTML is built
 window.addEventListener("load", loadSavedScreenshots);
+document.addEventListener('DOMContentLoaded', () => {
+  const uploadButtons = document.querySelectorAll('.upload-btn');
+  
+  uploadButtons.forEach((btn) => {
+    const container = btn.closest('.screenshot-upload');
+    const input = container.querySelector('.screenshot-input');
+    const preview = container.querySelector('.screenshot-preview');
+    
+    btn.addEventListener('click', () => input.click());
+    
+    input.addEventListener('change', () => {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        preview.src = e.target.result;
+        preview.classList.remove('hidden');
+        btn.classList.add('hidden');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Modal functionality
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const closeModal = document.querySelector('.close-modal');
+
+    preview.addEventListener('click', () => {
+      modal.classList.remove('hidden');
+      modalImg.src = preview.src;
+    });
+
+    closeModal.addEventListener('click', () => {
+      modal.classList.add('hidden');
+    });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.add('hidden');
+    });
+  });
+});
